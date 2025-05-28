@@ -9,7 +9,8 @@
 <body>
 	<h1>新規登録</h1>
 	
-	<form >
+	<form action="ManageServlet" method="post">
+		<input type="hidden" name="formAction" value="register">
 		<dl>
 			<dt>user name</dt>
 				<dd><input type="text" name="userName"></dd>

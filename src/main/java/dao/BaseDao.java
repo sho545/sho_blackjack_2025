@@ -56,7 +56,7 @@ public class BaseDao {
         closeResources(rs, pstmt, null); 
     }
 	public static void closeResources(PreparedStatement pstmt, Connection conn) {
-        closeResources(pstmt, conn); 
+        closeResources(null,pstmt, conn); 
     }
 	public static void closeResources(Connection conn) {
         closeResources(null, null, conn); 

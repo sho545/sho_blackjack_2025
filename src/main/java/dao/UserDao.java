@@ -56,12 +56,42 @@ public class UserDao extends BaseDao {
 		}catch(SQLException e) {
 			 System.err.println("ユーザーの取得中にエラーが発生しました " + e.getMessage());
 		     e.printStackTrace(); 
+		     throw e ;
 		}finally {
-			closeResources(rs, pstmt, null);
+			closeResources(rs, pstmt);
 			closeResources(rs1, pstmt1, conn);
 		}
 		return user ;
+	}
+	
+	//新規登録
+	public boolean registerUser(String userName, String password) throws SQLException{
+		Connection conn = null ;
+		PreparedStatement pstmt = null ;
 		
+		boolean result = false ;
+		
+		String sql = "insert into users (user_name, password) values (?, ?)" ;
+		try {
+			conn = getConnection() ;
+			
+			pstmt = conn.prepareStatement(sql) ;
+			pstmt.setString(1, userName);
+			pstmt.setString(2, password);
+			
+			int affectedRows = pstmt.executeUpdate();
+			
+            if (affectedRows > 0) {
+                result = true;
+            }
+		}catch(SQLException e){
+			System.err.println("新規登録中にエラーが発生しました " + e.getMessage());
+		     e.printStackTrace(); 
+		     throw e ;
+		}finally {
+			closeResources(pstmt,conn);
+		}
+		return result ;
 	}
 
 }
