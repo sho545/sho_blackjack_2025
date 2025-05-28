@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 import user.User;
 
@@ -68,28 +69,63 @@ public class UserDao extends BaseDao {
 	public boolean registerUser(String userName, String password) throws SQLException{
 		Connection conn = null ;
 		PreparedStatement pstmt = null ;
+		PreparedStatement pstmtResults = null ;
+		ResultSet generatedKeys = null ;
 		
 		boolean result = false ;
 		
 		String sql = "insert into users (user_name, password) values (?, ?)" ;
+		String sqlResults = "insert into results (user_id, number_of_games, victories) values (?, ?, ?) " ;
 		try {
 			conn = getConnection() ;
-			
-			pstmt = conn.prepareStatement(sql) ;
+			//トランザクション開始
+			conn.setAutoCommit(false);
+			//第二引数は生成されたキーを後で取り出せるように準備の意
+			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, userName);
 			pstmt.setString(2, password);
 			
 			int affectedRows = pstmt.executeUpdate();
 			
             if (affectedRows > 0) {
-                result = true;
+               generatedKeys = pstmt.getGeneratedKeys() ;
+               if(generatedKeys.next()) {
+            	   int newUserId = generatedKeys.getInt(1) ; 
+            	   
+            	   pstmtResults = conn.prepareStatement(sqlResults) ;
+       			   pstmtResults.setInt(1, newUserId);
+       			   pstmtResults.setInt(2, 0);
+       			   pstmtResults.setInt(3, 0) ;
+       			   
+       			   int affectedRowsResults = pstmtResults.executeUpdate();
+       			   if(affectedRowsResults > 0) {
+       				   result = true ;
+       			   }
+               }
             }
+            if(result) {
+            	conn.commit();
+            }else {
+            	conn.rollback();
+            	System.err.println("新規登録処理のいずれかのステップで失敗しました。ロールバックします。");
+            }
+            
 		}catch(SQLException e){
+			if (conn != null) {
+                try {
+                    conn.rollback(); 
+                    System.err.println("SQLException発生のためロールバックしました: " + e.getMessage());
+                } catch (SQLException ex) {
+                    System.err.println("ロールバック中にエラーが発生しました: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+			}
 			System.err.println("新規登録中にエラーが発生しました " + e.getMessage());
-		     e.printStackTrace(); 
-		     throw e ;
+		    e.printStackTrace(); 
+		    throw e ;
 		}finally {
-			closeResources(pstmt,conn);
+			closeResources(pstmt);
+			closeResources(pstmtResults, conn) ;
 		}
 		return result ;
 	}

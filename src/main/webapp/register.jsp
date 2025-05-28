@@ -9,13 +9,21 @@
 <body>
 	<h1>新規登録</h1>
 	
+	<%  String message = (String) request.getAttribute("message") ;
+	 	if(message != null && !message.isEmpty()){
+	%>
+		<p class="message"><%= message %></p>
+	<%
+	 	}
+	%>
+	
 	<form action="ManageServlet" method="post">
 		<input type="hidden" name="formAction" value="register">
 		<dl>
 			<dt>user name</dt>
-				<dd><input type="text" name="userName"></dd>
+				<dd><input type="text" name="userName" required></dd>
 			<dt>password</dt>
-				<dd><input type="text" name="password"></dd>
+				<dd><input type="text" name="password" required></dd>
 			<dt><button>新規登録</button></dt>
 		</dl>
 	</form>

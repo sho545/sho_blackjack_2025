@@ -99,19 +99,31 @@ public class ManageServlet extends HttpServlet {
 		
 		String userName = null ;
 		String password = null ;
+		User registeredUser = null ;
 		boolean result = false ;
 		String nextPage = "login.jsp" ;
 		String message = null ;
+		
+		userName = request.getParameter("userName") ;
+		password = request.getParameter("password") ;
+		
 		try {
-			userName = request.getParameter("userName") ;
-			password = request.getParameter("password") ;
 			UserDao userDao = new UserDao() ;
-			result = userDao.registerUser(userName, password) ;
+			registeredUser = userDao.findUser(userName, password) ;
 			
-			if(result) {
-				message = "新規登録しました" ;
+			if(registeredUser == null) {
+				
+				result = userDao.registerUser(userName, password) ;
+				
+				if(result) {
+					message = "新規登録しました" ;
+				}else {
+					message = "登録に失敗しました" ;
+				}
 			}else {
-				message = "登録に失敗しました" ;
+				//ここは検討
+				message = "そのuser nameとpasswordは既に登録されています" ;
+				nextPage = "register.jsp" ;
 			}
 			
 		}catch(SQLException e) {
