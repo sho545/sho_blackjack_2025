@@ -48,6 +48,9 @@ public class ManageServlet extends HttpServlet {
 			case "register" :
 				register(request, response) ;
 				break ;
+			case "logout" :
+				logout(request, response) ;
+				break ;
 			default : 
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なaction値です: " + action);
 	            break;
@@ -121,7 +124,7 @@ public class ManageServlet extends HttpServlet {
 					message = "登録に失敗しました" ;
 				}
 			}else {
-				//ここは検討
+//				ここは検討
 				message = "そのuser nameとpasswordは既に登録されています" ;
 				nextPage = "register.jsp" ;
 			}
@@ -138,6 +141,22 @@ public class ManageServlet extends HttpServlet {
 		if(message != null) {
 			request.setAttribute("message", message) ;
 		}
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
+		requestDispatcher.forward(request, response);
+	}
+	
+	//ログアウト
+	protected void logout (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String nextPage = "login.jsp" ;
+		String message = "ログアウトしました" ;
+		HttpSession session = request.getSession(false);
+		
+		if(session != null) {
+			session.invalidate();
+			request.setAttribute("message", message) ;
+		}
+		
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
 		requestDispatcher.forward(request, response);
 	}

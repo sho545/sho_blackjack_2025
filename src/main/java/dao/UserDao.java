@@ -5,6 +5,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
 
 import user.User;
 
@@ -128,6 +130,37 @@ public class UserDao extends BaseDao {
 			closeResources(pstmtResults, conn) ;
 		}
 		return result ;
+	}
+	
+	//戦績をとってくる
+	public List<Integer> getRecord(User user) throws SQLException{
+		Connection conn = null ;
+		PreparedStatement pstmt = null ;
+		ResultSet rs = null ;
+		
+		List<Integer> record = new ArrayList<>() ;
+		
+		String sql = "select from results where user_id = ?" ;
+		try {
+			conn = getConnection() ;
+
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setInt(1, user.getUserId());
+			
+			rs = pstmt.executeQuery() ;
+			
+            if (rs.next()) {
+               record.add(rs.getInt("number_of_games")) ;
+               record.add(rs.getInt("victories")) ;
+            }          
+		}catch(SQLException e){
+			System.err.println("データ取得中にエラーが発生しました " + e.getMessage());
+		    e.printStackTrace(); 
+		    throw e ;
+		}finally {
+			closeResources(rs, pstmt, conn) ;
+		}
+		return record ;
 	}
 
 }
