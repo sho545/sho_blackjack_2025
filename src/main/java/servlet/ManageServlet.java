@@ -2,6 +2,8 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -24,19 +26,57 @@ public class ManageServlet extends HttpServlet {
         super();
         // TODO Auto-generated constructor stub
     }
-
-	
+    
+    //getリクエストのname="actionForm"の値によって分岐
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
 		
+		String action = request.getParameter("formAction") ;
+		
+		if (action == null) {
+	        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "actionパラメータが指定されていません。");
+	        return;
+		}
+		 
+		switch (action) {
+			case "ranking" : 
+				ranking(request, response) ;
+				break ;
+			default : 
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なaction値です: " + action);
+	            break;
+		}		
 	}
 	
+	//勝率ランキングurl(user.jsp)から上位ランキングTop5リスト(List<User>)をとってranking.jspへ
+	protected void ranking(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		List<User> ranking = new ArrayList<>() ;
+		String nextPage = "ranking.jsp" ;
+		try {
+			UserDao userDao = new UserDao() ;
+			ranking = userDao.getRanking5() ;
+			
+		}catch(SQLException e) {
+			System.err.println("データベースアクセス中にエラーが発生しました " + e.getMessage());
+		    e.printStackTrace(); 
+		}
+		if(ranking != null) {
+			request.setAttribute("ranking", ranking);
+		}else {
+			System.err.println("ランキングを取得できませんでした ") ;
+		}
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
+		requestDispatcher.forward(request, response);
+	}
+
+	
+	
+	//postリクエストのname="actionForm"の値によって分岐
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String action = request.getParameter("formAction") ;
 		
 		if (action == null) {
-	        // actionパラメータがない場合のエラー処理
 	        response.sendError(HttpServletResponse.SC_BAD_REQUEST, "actionパラメータが指定されていません。");
 	        return;
 		}
@@ -51,6 +91,9 @@ public class ManageServlet extends HttpServlet {
 			case "logout" :
 				logout(request, response) ;
 				break ;
+			case "delete" :
+				delete(request, response) ;
+				break ;
 			default : 
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なaction値です: " + action);
 	            break;
@@ -58,7 +101,7 @@ public class ManageServlet extends HttpServlet {
 		
 	}
 	
-	//ログイン
+	//ログインボタン(login.jsp)からuser.jspへ(loginUserを引き渡し)
 	protected void login (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String userName = null ;
@@ -97,7 +140,7 @@ public class ManageServlet extends HttpServlet {
 		requestDispatcher.forward(request, response);
 	}
 	
-	//新規登録
+	//新規登録ボタン(register.jsp)からuserNameとpasswordを受け取って新規登録してlogin.jspへ
 	protected void register (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String userName = null ;
@@ -145,7 +188,7 @@ public class ManageServlet extends HttpServlet {
 		requestDispatcher.forward(request, response);
 	}
 	
-	//ログアウト
+	//ログアウトボタン(user.jsp)からlogin.jspへ
 	protected void logout (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String nextPage = "login.jsp" ;
@@ -157,6 +200,41 @@ public class ManageServlet extends HttpServlet {
 			request.setAttribute("message", message) ;
 		}
 		
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
+		requestDispatcher.forward(request, response);
+	}
+	
+	//ユーザー削除ボタン(user.jsp)からユーザーを削除してlogin.jspへ
+	protected void delete (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String nextPage = "login.jsp" ;
+		String message = null ;
+		boolean result = false ;
+		HttpSession session = request.getSession(false);
+		
+		if(session != null) {
+			User loginUser = (User) session.getAttribute("loginUser") ;
+			int userId = loginUser.getUserId() ;
+			
+			try {
+				UserDao userDao = new UserDao() ;
+				result = userDao.deleteUser(userId) ;
+				if(result) {
+					message = "ユーザーを削除しました" ;
+				}else {
+					message = "ユーザーを削除できませんでした" ;
+				}
+			}catch(SQLException e) {
+				System.err.println("データベースアクセス中にエラーが発生しました " + e.getMessage());
+			    e.printStackTrace(); 
+			    message = "データベースアクセス中にエラーが発生しました" ;
+			}			
+		}
+		if(message != null) {
+			request.setAttribute("message", message) ;
+		}else {
+			request.setAttribute("message", "予期せぬエラーが発生しました") ;
+		}
 		RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
 		requestDispatcher.forward(request, response);
 	}

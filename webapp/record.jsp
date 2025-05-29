@@ -1,0 +1,45 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ page import="user.User" %>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>戦績</title>
+</head>
+<body>
+	<%
+        // 前の画面から渡されたUserを取得
+         User loginUser = (User) session.getAttribute("loginUser") ;
+        if(loginUser != null){
+        	double numberOfGames = loginUser.getNumberOfGames();
+        	double victories = loginUser.getVictories() ;
+    %>
+	<p><strong><%= loginUser.getUserName() %>さん</strong>の戦績</p>
+	
+	<p>
+		試合数 : <%= numberOfGames %>
+	</p>
+	<p>
+		勝利数 : <%= victories %>
+	</p>
+	<p>
+		勝率 : <% if(numberOfGames != 0){ %>
+		       <%= (victories/numberOfGames)*100 %>%
+		       <% }else{ %>
+		       0%
+		       <%} %>
+	</p>
+	
+	<button onclick="history.back()">戻る</button>
+	
+	<%
+        }else{
+	%>
+	<p>ログインしていません<a href="login.jsp">ログインページへ</a></p>
+	<%
+		}
+	%>
+
+</body>
+</html>

@@ -80,6 +80,7 @@ public class UserDao extends BaseDao {
 		String sqlResults = "insert into results (user_id, number_of_games, victories) values (?, ?, ?) " ;
 		try {
 			conn = getConnection() ;
+			
 			//トランザクション開始
 			conn.setAutoCommit(false);
 			//第二引数は生成されたキーを後で取り出せるように準備の意
@@ -126,41 +127,101 @@ public class UserDao extends BaseDao {
 		    e.printStackTrace(); 
 		    throw e ;
 		}finally {
+			if(conn != null) {
+				conn.setAutoCommit(true);
+			}
 			closeResources(pstmt);
 			closeResources(pstmtResults, conn) ;
 		}
 		return result ;
 	}
 	
-	//戦績をとってくる
-	public List<Integer> getRecord(User user) throws SQLException{
+	//resultsテーブルから試合数が0でない勝率上位(最大)5人を取得(勝率が同じときは試合数が多いほうが上、それも同じならid順)
+	//試合数0でないユーザーがいないときは空のListを返す
+	public List<User> getRanking5() throws SQLException{
+		
 		Connection conn = null ;
 		PreparedStatement pstmt = null ;
 		ResultSet rs = null ;
-		
-		List<Integer> record = new ArrayList<>() ;
-		
-		String sql = "select from results where user_id = ?" ;
+		List<User> ranks = new ArrayList<>() ;
+		String sql = "select r.user_id, r.number_of_games, r.victories, u.user_name"
+				   + " from results r join users u on r.user_id = u.user_id"
+				   + " where r.number_of_games > 0" 
+				   + " order by (cast (r.victories as double) / r.number_of_games ) DESC,"
+				   + " r.number_of_games DESC, r.user_id ASC"
+				   + " limit 5" ;		
 		try {
 			conn = getConnection() ;
-
-			pstmt = conn.prepareStatement(sql);
-			pstmt.setInt(1, user.getUserId());
-			
+			pstmt = conn.prepareStatement(sql) ;
 			rs = pstmt.executeQuery() ;
 			
-            if (rs.next()) {
-               record.add(rs.getInt("number_of_games")) ;
-               record.add(rs.getInt("victories")) ;
-            }          
-		}catch(SQLException e){
-			System.err.println("データ取得中にエラーが発生しました " + e.getMessage());
+			while(rs.next()) {
+				User user = new User() ;
+				user.setUserId(rs.getInt("user_id")) ;
+				user.setNumberOfGames(rs.getInt("number_of_games")) ;
+				user.setVictories(rs.getInt("victories")) ;
+				user.setUserName(rs.getString("user_name")) ;
+				
+				ranks.add(user) ;
+			}
+		}catch(SQLException e) {
+			System.err.println("ランキングを取得中にエラーが起きました " + e.getMessage());
 		    e.printStackTrace(); 
 		    throw e ;
 		}finally {
-			closeResources(rs, pstmt, conn) ;
+			closeResources(rs,pstmt,conn);
 		}
-		return record ;
+		return ranks ;	
 	}
+	
+	//ユーザー削除(usersテーブルから削除しますon delete cascadeによってresultsも削除されます)
+	public boolean deleteUser(int userId) throws SQLException{
+		
+		Connection conn = null ;
+		PreparedStatement pstmt = null ;
+		String sql = "delete from users where user_id = ?" ;
+		boolean result = false ;
 
+		try {
+			conn = getConnection() ;
+			
+			conn.setAutoCommit(false) ;
+			pstmt = conn.prepareStatement(sql) ;
+			pstmt.setInt(1, userId);
+			int affectedRows = pstmt.executeUpdate() ;
+			
+			if(affectedRows > 0) {
+				result = true ;
+				conn.commit();
+			}else {
+				conn.rollback() ;
+				System.err.println("ユーザーの削除ができませんでした。ロールバックします");
+			}
+		}catch(SQLException e) {
+			try {
+				if(conn != null) {
+					conn.rollback();
+					System.err.println("SQLExceptionが発生したのでロールバックします");
+				}
+			}catch(SQLException ex) {
+				System.err.println("ロールバック中にエラーが発生しました: " + ex.getMessage());
+                ex.printStackTrace();
+			}
+			System.err.println("ユーザー削除中にエラーが起きました " + e.getMessage());
+		    e.printStackTrace(); 
+		    throw e ;
+		}finally {
+			try {
+				if(conn != null) {
+					conn.setAutoCommit(true);
+				}
+			}catch(SQLException ey){
+				 System.err.println("AutoCommit状態の復元中にエラーが発生しました: " + ey.getMessage());
+	             ey.printStackTrace();
+			}
+			closeResources(pstmt,conn);
+		}
+		return result ;	
+	}
+	
 }
