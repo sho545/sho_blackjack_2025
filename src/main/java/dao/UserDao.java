@@ -67,7 +67,7 @@ public class UserDao extends BaseDao {
 		return user ;
 	}
 	
-	//新規登録
+	//userNameとPasswordで新規登録
 	public boolean registerUser(String userName, String password) throws SQLException{
 		Connection conn = null ;
 		PreparedStatement pstmt = null ;
@@ -127,6 +127,7 @@ public class UserDao extends BaseDao {
 		    e.printStackTrace(); 
 		    throw e ;
 		}finally {
+			//autoCommitを自動に(今回は上位メソッドでトランザクションを行っていないためこの記述)
 			if(conn != null) {
 				conn.setAutoCommit(true);
 			}

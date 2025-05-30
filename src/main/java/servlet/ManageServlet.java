@@ -141,6 +141,7 @@ public class ManageServlet extends HttpServlet {
 	}
 	
 	//新規登録ボタン(register.jsp)からuserNameとpasswordを受け取って新規登録してlogin.jspへ
+	//既に登録されている(name,pass)は登録不可
 	protected void register (HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		String userName = null ;
