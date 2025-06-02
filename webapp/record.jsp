@@ -9,7 +9,7 @@
 </head>
 <body>
 	<%
-        // 前の画面から渡されたUserを取得
+        // sessionからloginUserを取得
          User loginUser = (User) session.getAttribute("loginUser") ;
         if(loginUser != null){
         	double numberOfGames = loginUser.getNumberOfGames();

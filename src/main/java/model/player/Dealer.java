@@ -5,7 +5,7 @@ import model.card.Deck;
 
 public class Dealer extends BasePlayer {
 	
-	//カードを17を超えるまで引いて、引いたカードをリストで返す
+	//カードを17を超えるまで引く
 	@Override
 	public void drawCards(Deck deck){
 		

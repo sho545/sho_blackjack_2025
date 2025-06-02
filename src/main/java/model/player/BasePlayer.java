@@ -8,11 +8,25 @@ import model.card.Deck;
 public abstract class BasePlayer {
 	
 	private List<Card> hand ;
-	private boolean isBurst ;
+	private boolean isBust ;
 	private int sumOfHand ;
 
 	//deckからカードを引く(abstract)
 	public abstract void drawCards(Deck deck) ;
+	
+	//手札の合計を計算
+	public int calculateSumOfHand() {
+		int sumOfHand = 0 ;
+		for(int i=0; i<this.hand.size(); i++) {
+			int number = this.hand.get(i).getNumber() ;
+			if(number < 10) {
+				sumOfHand += this.hand.get(i).getNumber() ;
+			}else {
+				sumOfHand += 10 ;
+			}
+		}
+		return sumOfHand ;
+	}
 	
 	//getter,setter
 	public List<Card> getHand() {
@@ -23,12 +37,12 @@ public abstract class BasePlayer {
 		this.hand = hand;
 	}
 
-	public boolean isBurst() {
-		return isBurst;
+	public boolean isBust() {
+		return isBust;
 	}
 
-	public void setBurst(boolean isBurst) {
-		this.isBurst = isBurst;
+	public void setBust(boolean isBust) {
+		this.isBust = isBust;
 	}
 	
 	public int getSumOfHand() {

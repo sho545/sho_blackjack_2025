@@ -32,7 +32,10 @@
 	<p><strong><%= loginUser.getUserName() %>さん</strong>(ユーザーid : <%= loginUser.getUserId() %>)</p>
 	
 	<p>
-		<a href="blackjack.jsp?id= <%= loginUser.getUserId()%> ">ゲームを始める</a>
+		<form action="GameServlet" method="post">
+			<input type="hidden" name="formAction" value="setGame">
+			<button>ゲームを始める</button>
+		</form>
 	</p>
 	<p>
 		<a href="record.jsp ">戦績表示</a>

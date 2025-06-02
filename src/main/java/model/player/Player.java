@@ -34,11 +34,11 @@ public class Player extends BasePlayer {
 		this.user = user;
 	}
 
-	public boolean isWin() {
+	public boolean getIsWin() {
 		return isWin;
 	}
 
-	public void setWin(boolean isWin) {
+	public void setIsWin(boolean isWin) {
 		this.isWin = isWin;
 	}
 

@@ -14,7 +14,7 @@
 	<h1>勝率ベスト5</h1>
 	
 	<%
-        // 前の画面から渡されたUserListを取得
+        // Servletによって渡されたUserListを取得
         List<User> ranking = (List<User>) request.getAttribute("ranking") ;
         if(ranking != null && !ranking.isEmpty()){
         	for(int i=0; i<ranking.size(); i++ ){
