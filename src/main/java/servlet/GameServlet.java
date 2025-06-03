@@ -39,13 +39,16 @@ public class GameServlet extends HttpServlet {
 			case "hit" : 
 				hit(request, response) ;
 				break ;
+			case "stand" :
+				stand(request,response) ;
+				break ;
 			default : 
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なaction値です: " + action);
 	            break;
 		}		
 	}
 	
-	//hitを行い、
+	//hitの処理
 	public void hit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	
 		HttpSession session = request.getSession(false) ;
@@ -58,17 +61,48 @@ public class GameServlet extends HttpServlet {
 			Game game = gameMaster.getGame() ;
 			gameMaster.playerHits(game);
 			gameMaster.checkAndSetBust(game) ;
-			boolean result = gameMaster.isGameOver(game) ;
-			request.setAttribute("gameMaster", gameMaster);
+			boolean playerIsBust = game.getPlayer().isBust() ;
 			
-			if(result == false) {
-				message = "hitしますか?standしますか?" ;
-			}else {
+			if(playerIsBust) {
 				message = "ゲーム終了です" ;
+			}else {
+				message = "hitしますか?standしますか?" ;
 			}
+			
+			request.setAttribute("gameMaster", gameMaster);
 			request.setAttribute("message", message);
 			RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
 			requestDispatcher.forward(request, response);
+			
+		}else {
+			System.err.println("gameMasterを取得できませんでした");
+		}
+	}
+	
+	//standの処理
+	public void stand(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		HttpSession session = request.getSession(false) ;
+		GameMaster gameMaster = (GameMaster) session.getAttribute("gameMaster") ;
+		String nextPage = "blackjack.jsp" ;
+		String message = "ゲーム終了です" ;
+		
+		if(gameMaster != null) {
+			
+			Game game = gameMaster.getGame() ;
+			gameMaster.makeDealerDrawCards(game) ;
+			gameMaster.checkAndSetBust(game) ;
+			gameMaster.checkGameOver(game) ;
+			
+			if(game.getGamePhase() == Game.GamePhase.GAME_OVER) {
+			
+				request.setAttribute("gameMaster", gameMaster);
+				request.setAttribute("message", message);
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
+				requestDispatcher.forward(request, response);
+			}else {
+				System.err.println("ゲームフェーズが終了になっていません");
+			}
 			
 		}else {
 			System.err.println("gameMasterを取得できませんでした");

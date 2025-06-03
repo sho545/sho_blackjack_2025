@@ -55,13 +55,12 @@ public class GameMaster {
 		player.setSumOfHand(playersSumOfHand);
 		dealer.setSumOfHand(dealersSumOfHand);
 		
-		
 		if(playersSumOfHand > 21) {
 			game.setGamePhase(Game.GamePhase.GAME_OVER);
 			player.setBust(true) ;
 		}else if(dealersSumOfHand > 21) {
 			game.setGamePhase(Game.GamePhase.GAME_OVER);
-			dealer.setBust(true); ;
+			dealer.setBust(true); 
 		}
 	}
 	
@@ -76,37 +75,40 @@ public class GameMaster {
 	public void makeDealerDrawCards(Game game) {
 		game.setGamePhase(Game.GamePhase.DEALER_TURN);
 		BasePlayer dealer = game.getDealer() ;
+		int dealersSumOfHand = dealer.calculateSumOfHand() ;
+		dealer.setSumOfHand(dealersSumOfHand);
 		dealer.drawCards(game.getDeck());
 	}
 	
-	//ゲームの終了を確認して終了ならplayerのisWinをセットしてtrueを返す
-	public boolean isGameOver(Game game) {
-		if(game.getGamePhase() != Game.GamePhase.GAME_OVER) {
-			return false ;
+	//勝敗チェックして終了フェーズをセット
+	public void checkGameOver(Game game) {
+		Player player = game.getPlayer() ;
+		Dealer dealer = game.getDealer() ;
+		if(player.isBust() == true) {
+			player.setIsWin(false);
+			game.setGamePhase(Game.GamePhase.GAME_OVER);
+		}else if(dealer.isBust() == true) {
+			player.setIsWin(true);
+			game.setGamePhase(Game.GamePhase.GAME_OVER);
 		}else {
-			Player player = game.getPlayer() ;
-			Dealer dealer = game.getDealer() ;
-			if(player.isBust() == true) {
+			player.setSumOfHand(player.calculateSumOfHand());
+			dealer.setSumOfHand(dealer.calculateSumOfHand());
+			int playersSumOfHand = player.getSumOfHand() ;
+			int dealersSumOfHand = dealer.getSumOfHand() ;
+			
+			if(playersSumOfHand > dealersSumOfHand) {
+				player.setIsWin(true);
+				game.setGamePhase(Game.GamePhase.GAME_OVER);
+			}else if (playersSumOfHand < dealersSumOfHand) {
 				player.setIsWin(false);
-			}else if(dealer.isBust() == true) {
-				player.setIsWin(false);
+				game.setGamePhase(Game.GamePhase.GAME_OVER);
 			}else {
-				player.setSumOfHand(player.calculateSumOfHand());
-				dealer.setSumOfHand(dealer.calculateSumOfHand());
-				int playersSumOfHand = player.getSumOfHand() ;
-				int dealersSumOfHand = dealer.getSumOfHand() ;
-				
-				if(playersSumOfHand > dealersSumOfHand) {
-					player.setIsWin(true);
-				}else if (playersSumOfHand < dealersSumOfHand) {
-					player.setIsWin(false);
-				}else {
-					//引き分けの時は一旦負けとしておく
-					player.setIsWin(false);
-				}
+				//引き分けの時は一旦負けとしておく
+				player.setIsWin(false);
+				game.setGamePhase(Game.GamePhase.GAME_OVER);
 			}
-			return true ;
 		}
+		
 	}
 	
 	//setter,getter
