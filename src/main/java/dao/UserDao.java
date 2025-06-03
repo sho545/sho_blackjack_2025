@@ -137,6 +137,37 @@ public class UserDao extends BaseDao {
 		return result ;
 	}
 	
+	//受け取ったuserIdから戦績と名前をとってくる
+	public User getRecord(int userId) throws SQLException{
+		
+		Connection conn = null ;
+		PreparedStatement pstmt = null ;
+		ResultSet rs = null ;
+		User user = new User() ;
+		String sql = "select r.number_of_games, r.victories, u.user_name"
+				   + " from results r join users u on r.user_id = u.user_id"
+				   + " where u.user_id = ?" ;
+		try {
+			conn = getConnection() ;
+			pstmt = conn.prepareStatement(sql) ;
+			pstmt.setInt(1, userId) ;
+			rs = pstmt.executeQuery() ;
+			
+			while(rs.next()) {
+				user.setNumberOfGames(rs.getInt("number_of_games")) ;
+				user.setVictories(rs.getInt("victories")) ;
+				user.setUserName(rs.getString("user_name")) ;
+			}
+		}catch(SQLException e) {
+			System.err.println("データ取得中にエラーが起きました " + e.getMessage());
+		    e.printStackTrace(); 
+		    throw e ;
+		}finally {
+			closeResources(rs,pstmt,conn);
+		}
+		return user ;	
+	}
+	
 	//resultsテーブルから試合数が0でない勝率上位(最大)5人を取得(勝率が同じときは試合数が多いほうが上、それも同じならid順)
 	//試合数0でないユーザーがいないときは空のListを返す
 	public List<User> getRanking5() throws SQLException{
@@ -209,6 +240,108 @@ public class UserDao extends BaseDao {
                 ex.printStackTrace();
 			}
 			System.err.println("ユーザー削除中にエラーが起きました " + e.getMessage());
+		    e.printStackTrace(); 
+		    throw e ;
+		}finally {
+			try {
+				if(conn != null) {
+					conn.setAutoCommit(true);
+				}
+			}catch(SQLException ey){
+				 System.err.println("AutoCommit状態の復元中にエラーが発生しました: " + ey.getMessage());
+	             ey.printStackTrace();
+			}
+			closeResources(pstmt,conn);
+		}
+		return result ;	
+	}
+	
+	//受け取ったuserIdのvictoriesを+1する(number_of_gamesも+1)
+	public boolean victoriesPlus1(int userId) throws SQLException{
+		
+		Connection conn = null ;
+		PreparedStatement pstmt = null ;
+		String sql = "update results set victories = victories + 1, number_of_games = number_of_games + 1"
+				   + " where user_id = ?" ;
+		boolean result = false ;
+
+		try {
+			conn = getConnection() ;
+			
+			conn.setAutoCommit(false) ;
+			pstmt = conn.prepareStatement(sql) ;
+			pstmt.setInt(1, userId);
+			int affectedRows = pstmt.executeUpdate() ;
+			
+			if(affectedRows > 0) {
+				result = true ;
+				conn.commit();
+			}else {
+				conn.rollback() ;
+				System.err.println("戦績の変更ができませんでした。ロールバックします");
+			}
+		}catch(SQLException e) {
+			try {
+				if(conn != null) {
+					conn.rollback();
+					System.err.println("SQLExceptionが発生したのでロールバックします");
+				}
+			}catch(SQLException ex) {
+				System.err.println("ロールバック中にエラーが発生しました: " + ex.getMessage());
+                ex.printStackTrace();
+			}
+			System.err.println("戦績変更中にエラーが起きました " + e.getMessage());
+		    e.printStackTrace(); 
+		    throw e ;
+		}finally {
+			try {
+				if(conn != null) {
+					conn.setAutoCommit(true);
+				}
+			}catch(SQLException ey){
+				 System.err.println("AutoCommit状態の復元中にエラーが発生しました: " + ey.getMessage());
+	             ey.printStackTrace();
+			}
+			closeResources(pstmt,conn);
+		}
+		return result ;	
+	}
+	
+	//受け取ったuserIdのnumber_of_gamesだけ+1
+	public boolean numberOfGamesPlus1(int userId) throws SQLException{
+		
+		Connection conn = null ;
+		PreparedStatement pstmt = null ;
+		String sql = "update results set number_of_games = number_of_games + 1"
+				   + " where user_id = ?" ;
+		boolean result = false ;
+
+		try {
+			conn = getConnection() ;
+			
+			conn.setAutoCommit(false) ;
+			pstmt = conn.prepareStatement(sql) ;
+			pstmt.setInt(1, userId);
+			int affectedRows = pstmt.executeUpdate() ;
+			
+			if(affectedRows > 0) {
+				result = true ;
+				conn.commit();
+			}else {
+				conn.rollback() ;
+				System.err.println("戦績の変更ができませんでした。ロールバックします");
+			}
+		}catch(SQLException e) {
+			try {
+				if(conn != null) {
+					conn.rollback();
+					System.err.println("SQLExceptionが発生したのでロールバックします");
+				}
+			}catch(SQLException ex) {
+				System.err.println("ロールバック中にエラーが発生しました: " + ex.getMessage());
+                ex.printStackTrace();
+			}
+			System.err.println("戦績変更中にエラーが起きました " + e.getMessage());
 		    e.printStackTrace(); 
 		    throw e ;
 		}finally {

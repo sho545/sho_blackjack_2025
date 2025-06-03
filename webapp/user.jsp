@@ -38,7 +38,7 @@
 		</form>
 	</p>
 	<p>
-		<a href="record.jsp ">戦績表示</a>
+		<a href="ManageServlet?formAction=record ">戦績表示</a>
 	</p>
 	<p>
 		<a href="ManageServlet?formAction=ranking">勝率ランキング</a>

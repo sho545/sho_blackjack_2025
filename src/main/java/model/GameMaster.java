@@ -9,6 +9,7 @@ import model.card.Deck;
 import model.player.BasePlayer;
 import model.player.Dealer;
 import model.player.Player;
+import model.player.Player.PlayerResult;
 
 public class GameMaster {
 	
@@ -85,10 +86,10 @@ public class GameMaster {
 		Player player = game.getPlayer() ;
 		Dealer dealer = game.getDealer() ;
 		if(player.isBust() == true) {
-			player.setIsWin(false);
+			player.setPlayerResult(PlayerResult.LOSE) ;
 			game.setGamePhase(Game.GamePhase.GAME_OVER);
 		}else if(dealer.isBust() == true) {
-			player.setIsWin(true);
+			player.setPlayerResult(PlayerResult.WIN) ;
 			game.setGamePhase(Game.GamePhase.GAME_OVER);
 		}else {
 			player.setSumOfHand(player.calculateSumOfHand());
@@ -97,14 +98,14 @@ public class GameMaster {
 			int dealersSumOfHand = dealer.getSumOfHand() ;
 			
 			if(playersSumOfHand > dealersSumOfHand) {
-				player.setIsWin(true);
+				player.setPlayerResult(PlayerResult.WIN) ;
 				game.setGamePhase(Game.GamePhase.GAME_OVER);
 			}else if (playersSumOfHand < dealersSumOfHand) {
-				player.setIsWin(false);
+				player.setPlayerResult(PlayerResult.LOSE) ;
 				game.setGamePhase(Game.GamePhase.GAME_OVER);
 			}else {
 				//引き分けの時は一旦負けとしておく
-				player.setIsWin(false);
+				player.setPlayerResult(PlayerResult.DRAW) ;
 				game.setGamePhase(Game.GamePhase.GAME_OVER);
 			}
 		}

@@ -41,10 +41,38 @@ public class ManageServlet extends HttpServlet {
 			case "ranking" : 
 				ranking(request, response) ;
 				break ;
+			case "record" :
+				record(request,response) ;
+				break ;
 			default : 
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なaction値です: " + action);
 	            break;
 		}		
+	}
+	
+	//受け取ったuseIdの戦績を表示
+	protected void record(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String nextPage = "record.jsp" ;
+		UserDao userDao = new UserDao() ;
+		HttpSession session = request.getSession(false) ;
+		
+		if(session != null) {
+			User loginUser = (User) session.getAttribute("loginUser") ;
+			try {
+				User user = userDao.getRecord(loginUser.getUserId()) ;
+				
+				request.setAttribute("user", user);
+				RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
+				requestDispatcher.forward(request, response);
+				
+			}catch(SQLException e) {
+				System.err.println("データベースアクセス中にエラーが発生しました " + e.getMessage());
+			    e.printStackTrace(); 
+			}
+		}else {
+			System.err.println("sessionを取得できませんでした ") ;
+		}
 	}
 	
 	//勝率ランキングurl(user.jsp)から上位ランキングTop5リスト(List<User>)をとってranking.jspへ

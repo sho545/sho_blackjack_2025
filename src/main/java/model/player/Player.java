@@ -6,14 +6,20 @@ import user.User;
 
 public class Player extends BasePlayer {
 	
+	public enum PlayerResult{
+		WIN,
+		DRAW,
+		LOSE,
+		UNDEFINED 
+	}
+	
 	private User user ;
-	private boolean isWin ;
-	private int hitCount ;
+	private PlayerResult playerResult ;
 	
 	//コンストラクタでloginUserを受け取って初期化
 	public Player(User loginUser) {
 		this.user = loginUser ;
-		this.hitCount = 0 ;
+		 this.playerResult = PlayerResult.UNDEFINED;
 	}
 	
 	//カードを一枚引く
@@ -34,22 +40,12 @@ public class Player extends BasePlayer {
 		this.user = user;
 	}
 
-	public boolean getIsWin() {
-		return isWin;
+	public PlayerResult getPlayerResult() {
+		return playerResult;
 	}
 
-	public void setIsWin(boolean isWin) {
-		this.isWin = isWin;
+	public void setPlayerResult(PlayerResult playerResult) {
+		this.playerResult = playerResult;
 	}
-
-	public int getHitCount() {
-		return hitCount;
-	}
-
-	public void setHitCount(int hitCount) {
-		this.hitCount = hitCount;
-	}
-	
-	
-	
+		
 }

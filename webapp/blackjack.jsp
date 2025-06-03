@@ -38,12 +38,28 @@
 			<!--		ここにplayerの勝敗を表示したい-->
 					<p class="message"><%= message %></p>
 					<p>
-						<% if(game.getGamePhase()==Game.GamePhase.GAME_OVER && player.getIsWin()){ %>
+						<% if(game.getGamePhase()==Game.GamePhase.GAME_OVER && player.getPlayerResult()==Player.PlayerResult.WIN){ %>
 								<%= loginUser.getUserName() %>さんの勝ちです
+								<form action="GameServlet" method="post">
+									<input type="hidden" name="formAction" value="gameOver">
+									<button>ゲーム終了</button>
+								</form>
 						<%
-							}else if(game.getGamePhase()==Game.GamePhase.GAME_OVER && !player.getIsWin()) {
+							}else if(game.getGamePhase()==Game.GamePhase.GAME_OVER && player.getPlayerResult()==Player.PlayerResult.LOSE) {
 						%>
 								<%= loginUser.getUserName() %>さんの負けです
+								<form action="GameServlet" method="post">
+									<input type="hidden" name="formAction" value="gameOver">
+									<button>ゲーム終了</button>
+								</form>
+						<%
+							}else if(game.getGamePhase()==Game.GamePhase.GAME_OVER && player.getPlayerResult()==Player.PlayerResult.DRAW){
+						%>
+								<%= loginUser.getUserName() %>さん引き分けです
+								<form action="GameServlet" method="post">
+									<input type="hidden" name="formAction" value="gameOver">
+									<button>ゲーム終了</button>
+								</form>
 						<%
 							}
 						%>

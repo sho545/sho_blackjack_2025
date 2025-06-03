@@ -10,12 +10,12 @@
 <body>
 	<%
         // sessionからloginUserを取得
-         User loginUser = (User) session.getAttribute("loginUser") ;
-        if(loginUser != null){
-        	double numberOfGames = loginUser.getNumberOfGames();
-        	double victories = loginUser.getVictories() ;
+         User user = (User) request.getAttribute("user") ;
+        if(user != null){
+        	double numberOfGames = user.getNumberOfGames();
+        	double victories = user.getVictories() ;
     %>
-	<p><strong><%= loginUser.getUserName() %>さん</strong>の戦績</p>
+	<p><strong><%= user.getUserName() %>さん</strong>の戦績</p>
 	
 	<p>
 		試合数 : <%= numberOfGames %>
