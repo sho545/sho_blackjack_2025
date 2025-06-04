@@ -148,7 +148,7 @@ public class ManageServlet extends HttpServlet {
 				session.setAttribute("loginUser", loginUser);
 				message = "ログインしました" ;
 				nextPage = "user.jsp" ;
-			}else {
+			} else {
 				message = "ユーザーネームかパスワードが無効です" ;
 			}
 			
@@ -202,7 +202,7 @@ public class ManageServlet extends HttpServlet {
 			}
 			
 		}catch(SQLException e) {
-			System.err.println("データベースアクセス中にエラーが発生しました " + e.getMessage());
+			 System.err.println("データベースアクセス中にエラーが発生しました " + e.getMessage());
 		     e.printStackTrace(); 
 		     message = "データベースアクセス中にエラーが発生しました" ;
 		}catch(Exception e) {
@@ -253,11 +253,11 @@ public class ManageServlet extends HttpServlet {
 				}else {
 					message = "ユーザーを削除できませんでした" ;
 				}
-			}catch(SQLException e) {
+			 }catch(SQLException e) {
 				System.err.println("データベースアクセス中にエラーが発生しました " + e.getMessage());
 			    e.printStackTrace(); 
 			    message = "データベースアクセス中にエラーが発生しました" ;
-			}			
+			 }			
 		}
 		if(message != null) {
 			request.setAttribute("message", message) ;

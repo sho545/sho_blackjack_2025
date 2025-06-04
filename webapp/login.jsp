@@ -25,7 +25,7 @@
 			<dt>user name</dt>
 				<dd><input type="text" name="userName" required></dd>
 			<dt>password</dt>
-				<dd><input type="text" name="password" required></dd>
+				<dd><input type="password" name="password" required></dd>
 			<dt><button>ログイン</button></dt>
 		</dl>
 	</form>

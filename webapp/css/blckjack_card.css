@@ -1,0 +1,139 @@
+@charset "UTF-8";
+/* --- 基本的なカードスタイル --- */
+.card {
+  display: inline-block; /* カードを横に並べるため */
+  width: 80px;
+  height: 120px;
+  border: 1px solid #333;
+  border-radius: 8px;
+  background-color: #fff;
+  margin: 5px;
+  padding: 5px;
+  box-shadow: 2px 2px 5px rgba(0,0,0,0.2);
+  position: relative; /* 子要素の位置指定のため */
+  font-family: 'Arial', sans-serif; /* フォントを指定 */
+}
+
+.card-inner {
+  width: 100%;
+  height: 100%;
+  position: relative;
+}
+
+/* --- ランクとスートの共通スタイル --- */
+.card .rank {
+  font-size: 18px;
+  font-weight: bold;
+  line-height: 1;
+}
+
+.card .suit {
+  font-size: 16px;
+  line-height: 1;
+}
+
+/* --- 左上と右下の配置 --- */
+.card-topleft {
+  position: absolute;
+  top: 5px;
+  left: 5px;
+  text-align: center;
+}
+
+.card-bottomright {
+  position: absolute;
+  bottom: 5px;
+  right: 5px;
+  text-align: center;
+  transform: rotate(180deg); /* 右下は180度回転 */
+}
+
+.card-topleft .suit,
+.card-bottomright .suit {
+  display: block; /* ランクとスートを縦に並べる */
+  margin-top: 2px;
+}
+
+
+/* --- 中央のスート --- */
+.card-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.card-center .suit-big {
+  font-size: 40px;
+}
+
+/* --- スートの色 --- */
+.card.suit-spade .suit,
+.card.suit-spade .suit-big,
+.card.suit-club .suit,
+.card.suit-club .suit-big {
+  color: #000; /* 黒 */
+}
+
+.card.suit-heart .suit,
+.card.suit-heart .suit-big,
+.card.suit-diamond .suit,
+.card.suit-diamond .suit-big {
+  color: #D32F2F; /* 赤 */
+}
+
+/* --- ランクのテキスト --- */
+/* rank-a, rank-k などはJSPで動的に設定 */
+.card.rank-1 .rank::before { content: "A"; } 
+/*cardかつrank-aのクラスをもつ要素の中にあるrankクラスを持つ要素*/
+/*a .rankの半角スペースで.card.rank-aの子/孫要素を表す*/
+/*::before 選択された要素の内容の直前に仮想的な要素を生成して挿入*/
+/*{content: "A";} ::beforeで生成された仮想的な要素の中身としてAを表示*/
+.card.rank-2 .rank::before { content: "2"; }
+.card.rank-3 .rank::before { content: "3"; }
+.card.rank-4 .rank::before { content: "4"; }
+.card.rank-5 .rank::before { content: "5"; }
+.card.rank-6 .rank::before { content: "6"; }
+.card.rank-7 .rank::before { content: "7"; }
+.card.rank-8 .rank::before { content: "8"; }
+.card.rank-9 .rank::before { content: "9"; }
+.card.rank-10 .rank::before { content: "10"; }
+.card.rank-11 .rank::before { content: "J"; }
+.card.rank-12 .rank::before { content: "Q"; }
+.card.rank-13 .rank::before { content: "K"; }
+
+
+/* --- スートの記号 --- */
+/* Unicode文字をJSPで動的に設定 */
+.card.suit-3 .suit::before,
+.card.suit-3 .suit-big::before { content: "\2660"; } /* ♠ */
+
+.card.suit-1 .suit::before,
+.card.suit-1 .suit-big::before { content: "\2665"; } /* ♥ */
+
+.card.suit-2 .suit::before,
+.card.suit-2 .suit-big::before { content: "\2666"; } /* ♦ */
+
+.card.suit-4 .suit::before,
+.card.suit-4 .suit-big::before { content: "\2663"; } /* ♣ */
+
+/* カードの裏面（オプション） */
+.card.back {
+  background-color: #5578c0; /* 裏面の色 */
+}
+.card.back .card-inner {
+  display: none; /* 表面の要素を隠す */
+}
+/* 裏面のデザインは、background-image などで凝ることもできます */
+.card.back::after {
+  content: "";
+  display: block;
+  width: 90%;
+  height: 90%;
+  border: 2px dashed #fff;
+  border-radius: 5px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}

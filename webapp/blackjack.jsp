@@ -15,6 +15,22 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="css/blckjack_card.css">
+
+<!--	standからのディーラーの二枚目のカードオープン関数-->
+	<script type="text/javascript">
+		document.addEventListener("DOMContentLoaded", function(){
+			const standButton = document.getElementById("stand");
+			const hitButton = document.getElementById("hit") ;
+
+			if(standButton && hitButton){
+				standButton.addEventListener("click", function(event){
+					standButton.disabled = true ;
+					hitButton.disabled = true ;	
+				})
+			}
+		});
+	</script>
 <title>ブラックジャック</title>
 </head>
 <body>
@@ -73,31 +89,96 @@
 						<% 
 							List<Card> dealersCards = dealer.getHand() ;
 							List<Card> playersCards = player.getHand() ;
+						%>	
+							<dd>
+						<% 	
 							for(int i=0; i<dealersCards.size(); i++){
+								if(i == 1 && game.getGamePhase() != Game.GamePhase.GAME_OVER){
 						%>
-							<dd>(<%= dealersCards.get(i).getMark() %>,<%= dealersCards.get(i).getNumber() %>)</dd>
+								<div class="card suit-<%= dealer.getHand().get(i).getMark()%> 
+									rank-<%= dealer.getHand().get(i).getNumber()%> back">
+								  <div class="card-inner">
+								    <div class="card-topleft">
+								      <span class="rank"></span>
+								      <span class="suit"></span>
+								    </div>
+								    <div class="card-center">
+								      <span class="suit-big"></span>
+								    </div>
+								    <div class="card-bottomright">
+								      <span class="rank"></span>
+								      <span class="suit"></span>
+								    </div>
+								  </div>
+								</div>
+							<%
+								}else {
+							%>
+								<div id="dealersSecondCard"
+									class="card suit-<%= dealer.getHand().get(i).getMark()%> 
+									rank-<%= dealer.getHand().get(i).getNumber()%>">
+								  <div class="card-inner">
+								    <div class="card-topleft">
+								      <span class="rank"></span>
+								      <span class="suit"></span>
+								    </div>
+								    <div class="card-center">
+								      <span class="suit-big"></span>
+								    </div>
+								    <div class="card-bottomright">
+								      <span class="rank"></span>
+								      <span class="suit"></span>
+								    </div>
+								  </div>
+								</div>	
+							<% 
+								}
+							%> 
 						<% 
 							}
 						%>
+							</dd>
 					<dt><%= loginUser.getUserName() %>さんの手札</dt>
+						<dd>
 						<% 
 							for(int i=0; i<playersCards.size(); i++){
 						%>
-						<dd>(<%= playersCards.get(i).getMark() %>,<%= playersCards.get(i).getNumber() %>)</dd>
+							<div class="card suit-<%= player.getHand().get(i).getMark()%> rank-<%= player.getHand().get(i).getNumber()%>">
+							  <div class="card-inner">
+							    <div class="card-topleft">
+							      <span class="rank"></span>
+							      <span class="suit"></span>
+							    </div>
+							    <div class="card-center">
+							      <span class="suit-big"></span>
+							    </div>
+							    <div class="card-bottomright">
+							      <span class="rank"></span>
+							      <span class="suit"></span>
+							    </div>
+							  </div>
+							</div>
 						<% 
 							}
-						%>	
+						%>
+						</dd>	
 				</dl>
 				
-				<form action="GameServlet">
-					<input type="hidden" name="formAction" value="hit">
-					<button>hit</button>
-				</form>
-				
-				<form action="GameServlet">
-					<input type="hidden" name="formAction" value="stand">
-					<button>stand</button>
-				</form>
+				<% 
+				if(game.getGamePhase()!=Game.GamePhase.GAME_OVER) {
+				%>
+					<form id="hit" action="GameServlet">
+						<input type="hidden" name="formAction" value="hit">
+						<button>hit</button>
+					</form>
+					
+					<form id="stand" action="GameServlet">
+						<input type="hidden" name="formAction" value="stand">
+						<button>stand</button>
+					</form>
+				<%
+				}
+				%>
 			
 		<%
 	        }else{

@@ -100,7 +100,7 @@ public class GameServlet extends HttpServlet {
 			gameMaster.checkGameOver(game) ;
 			
 			if(game.getGamePhase() == Game.GamePhase.GAME_OVER) {
-			
+	
 				request.setAttribute("gameMaster", gameMaster);
 				request.setAttribute("message", message);
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
