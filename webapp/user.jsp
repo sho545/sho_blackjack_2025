@@ -38,7 +38,7 @@
 		</form>
 	</p>
 	<p>
-		<a href="ManageServlet?formAction=record ">戦績表示</a>
+		<a href="${pageContext.request.contextPath}/RegisterServlet">戦績表示</a>
 	</p>
 	<p>
 		<a href="ManageServlet?formAction=ranking">勝率ランキング</a>
@@ -50,8 +50,8 @@
 		</form>
 	</p>
 	<p>
-		<form action="ManageServlet" method="post">
-			<input type="hidden" name="formAction" value="logout">
+		<form action="${pageContext.request.contextPath}/session/logout" method="post">
+<!--			<input type="hidden" name="formAction" value="logout">-->
 			<button>ログアウト</button>
 		</form>
 	</p>

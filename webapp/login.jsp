@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<!--<%@ taglib uri="jakarta.tags.core" prefix="c" %> -->
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,8 +19,8 @@
 	 	}
 	%>
 	
-	<form action="ManageServlet" method="post">
-		<input type="hidden" name="formAction" value="login">
+	<form action="${pageContext.request.contextPath}/session/login" method="post">
+<!--		<input type="hidden" name="formAction" value="login" >-->
 		<dl>
 			<dt>user name</dt>
 				<dd><input type="text" name="userName" required></dd>
