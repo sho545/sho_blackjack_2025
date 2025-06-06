@@ -22,7 +22,7 @@ public class GameMaster {
 		Deck deck = game.getDeck() ;
 		List<Card> remainingCards = deck.getList() ;
 		
-		
+		game.setGamePhase(Game.GamePhase.INITIAL_DEAL) ;
 		//カードシャッフル
 		Collections.shuffle(remainingCards) ;
 		
@@ -41,8 +41,8 @@ public class GameMaster {
 		for(int i=0; i<2; i++) {
 			dealer.getHand().add(deck.drawCard()) ;
 		}
-		//状態をinitial dealに
-		game.setGamePhase(Game.GamePhase.INITIAL_DEAL) ;
+		//状態をplayer turnに
+		game.setGamePhase(Game.GamePhase.PLAYER_TURN) ;
 	}
 	
 	//バーストチェックを行って、バーストの結果をgameにセット
@@ -67,7 +67,6 @@ public class GameMaster {
 	
 	//playerにhitさせる
 	public void playerHits(Game game) {
-		game.setGamePhase(Game.GamePhase.PLAYER_TURN);
 		BasePlayer player = game.getPlayer() ;
 		player.drawCards(game.getDeck());
 	}

@@ -9,40 +9,61 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
 
 import dao.UserDao;
 import user.User;
 
 /**
- * Servlet implementation class Register
+ * Servlet implementation class RegisterServlet
  */
 @WebServlet("/RegisterServlet")
 public class RegisterServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-       
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		String userName = null ;
+		String password = null ;
+		User registeredUser = null ;
+		boolean result = false ;
+		String nextPage = "login.jsp" ;
+		String message = null ;
 		
-		String nextPage = "record.jsp" ;
-		UserDao userDao = new UserDao() ;
-		HttpSession session = request.getSession(false) ;
+		userName = request.getParameter("userName") ;
+		password = request.getParameter("password") ;
 		
-		if(session != null) {
-			User loginUser = (User) session.getAttribute("loginUser") ;
-			try {
-				User user = userDao.getRecord(loginUser.getUserId()) ;
+		try {
+			UserDao userDao = new UserDao() ;
+			registeredUser = userDao.findUser(userName, password) ;
+			
+			if(registeredUser == null) {
 				
-				request.setAttribute("user", user);
-				RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
-				requestDispatcher.forward(request, response);
+				result = userDao.registerUser(userName, password) ;
 				
-			}catch(SQLException e) {
-				System.err.println("データベースアクセス中にエラーが発生しました " + e.getMessage());
-			    e.printStackTrace(); 
+				if(result) {
+					message = "新規登録しました" ;
+				}else {
+					message = "登録に失敗しました" ;
+				}
+			}else {
+//				ここは検討
+				message = "そのuser nameとpasswordは既に登録されています" ;
+				nextPage = "register.jsp" ;
 			}
-		}else {
-			System.err.println("sessionを取得できませんでした ") ;
+			
+		}catch(SQLException e) {
+			 System.err.println("データベースアクセス中にエラーが発生しました " + e.getMessage());
+		     e.printStackTrace(); 
+		     message = "データベースアクセス中にエラーが発生しました" ;
+		}catch(Exception e) {
+			System.err.println("予期せぬエラーが発生しました: " + e.getMessage());
+	        e.printStackTrace();
+	        message = "予期せぬエラーが発生しました" ;
 		}
+		if(message != null) {
+			request.setAttribute("message", message) ;
+		}
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
+		requestDispatcher.forward(request, response);
 	}
 
 }

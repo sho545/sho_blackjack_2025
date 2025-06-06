@@ -32,20 +32,19 @@
 	<p><strong><%= loginUser.getUserName() %>さん</strong>(ユーザーid : <%= loginUser.getUserId() %>)</p>
 	
 	<p>
-		<form action="GameServlet" method="post">
-			<input type="hidden" name="formAction" value="setGame">
+		<form action="${pageContext.request.contextPath}/gameSetup/start" method="post">
+<!--			<input type="hidden" name="formAction" value="setGame">-->
 			<button>ゲームを始める</button>
 		</form>
 	</p>
 	<p>
-		<a href="${pageContext.request.contextPath}/RegisterServlet">戦績表示</a>
+		<a href="${pageContext.request.contextPath}/RecordServlet">戦績表示</a>
 	</p>
 	<p>
-		<a href="ManageServlet?formAction=ranking">勝率ランキング</a>
+		<a href="${pageContext.request.contextPath}/RankingServlet">勝率ランキング</a>
 	</p>
 	<p>
-		<form id="deleteForm<%=loginUser.getUserId() %>" action="ManageServlet" method="post">
-			<input type="hidden" name="formAction" value="delete">
+		<form id="deleteForm<%=loginUser.getUserId() %>" action="${pageContext.request.contextPath}/UserServlet" method="post">
 			<button type="button" onclick="confirmSubmit('deleteForm<%= loginUser.getUserId() %>')">ユーザー削除</button>
 		</form>
 	</p>

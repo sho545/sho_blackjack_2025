@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,7 +18,7 @@
 	 	}
 	%>
 	
-	<form action="ManageServlet" method="post">
+	<form action="RegisterServlet" method="post">
 		<input type="hidden" name="formAction" value="register">
 		<dl>
 			<dt>user name</dt>

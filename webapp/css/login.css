@@ -1,0 +1,113 @@
+@charset "UTF-8";
+/* ページの基本スタイル */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Noto Sans JP', sans-serif;
+    background-color: #f0f2f5; /* 少しグレーがかった背景 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* ログインフォーム全体のコンテナ */
+.login-container {
+    padding: 40px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+/* h1タイトルのスタイル */
+h1 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    color: #333;
+    font-weight: 700;
+}
+
+/* エラーメッセージのスタイル */
+.message {
+    color: #d93025; /* エラーを示す赤色 */
+    background-color: #fbe9e7;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
+/* フォームの各入力項目をまとめるグループ */
+.form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+/* ラベルのスタイル */
+label {
+	display: block;
+	margin-bottom: 8px;
+	font-weight: 700;
+	color: #555;
+}
+
+/* 入力フィールドのスタイル */
+input[type="text"],
+input[type="password"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-sizing: border-box; /* paddingを含めて幅を100%に */
+    font-size: 16px;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+/* 入力フィールドがフォーカスされた時のスタイル */
+input[type="text"]:focus,
+input[type="password"]:focus {
+    outline: none;
+    border-color: #007bff; /* フォーカス時に青色に */
+    box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2);
+}
+
+/* ログインボタンのスタイル */
+button {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px;
+    background-color: #007bff; /* 目を引く青色 */
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
+}
+
+/* ボタンにマウスが乗った時のスタイル */
+button:hover {
+    background-color: #0056b3; /* 少し濃い青色に */
+}
+
+/* 新規登録リンクのコンテナ */
+.register-link {
+    margin-top: 24px;
+}
+
+.register-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 700;
+    transition: text-decoration 0.3s;
+}
+
+.register-link a:hover {
+    text-decoration: underline;
+}

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib uri="jakarta.tags.core" prefix="c" %>
 <%@ page import="model.GameMaster" %>
 <%@ page import="model.Game" %>
 <%@ page import="user.User" %>
@@ -15,7 +16,7 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" type="text/css" href="css/blckjack_card.css">
+<link rel="stylesheet" type="text/css" href="/blackjack/css/blckjack_card.css">
 
 <!--	standからのディーラーの二枚目のカードオープン関数-->
 	<script type="text/javascript">
@@ -34,6 +35,7 @@
 <title>ブラックジャック</title>
 </head>
 <body>
+
 	<%
         // sessionからloginUserを取得
          User loginUser = (User) session.getAttribute("loginUser") ;
@@ -56,24 +58,21 @@
 					<p>
 						<% if(game.getGamePhase()==Game.GamePhase.GAME_OVER && player.getPlayerResult()==Player.PlayerResult.WIN){ %>
 								<%= loginUser.getUserName() %>さんの勝ちです
-								<form action="GameServlet" method="post">
-									<input type="hidden" name="formAction" value="gameOver">
+								<form action="${pageContext.request.contextPath}/gameSetup/over" method="post">
 									<button>ゲーム終了</button>
 								</form>
 						<%
 							}else if(game.getGamePhase()==Game.GamePhase.GAME_OVER && player.getPlayerResult()==Player.PlayerResult.LOSE) {
 						%>
 								<%= loginUser.getUserName() %>さんの負けです
-								<form action="GameServlet" method="post">
-									<input type="hidden" name="formAction" value="gameOver">
+								<form action="${pageContext.request.contextPath}/gameSetup/over" method="post">
 									<button>ゲーム終了</button>
 								</form>
 						<%
 							}else if(game.getGamePhase()==Game.GamePhase.GAME_OVER && player.getPlayerResult()==Player.PlayerResult.DRAW){
 						%>
 								<%= loginUser.getUserName() %>さん引き分けです
-								<form action="GameServlet" method="post">
-									<input type="hidden" name="formAction" value="gameOver">
+								<form action="${pageContext.request.contextPath}/gameSetup/over" method="post">
 									<button>ゲーム終了</button>
 								</form>
 						<%
@@ -167,13 +166,13 @@
 				<% 
 				if(game.getGamePhase()!=Game.GamePhase.GAME_OVER) {
 				%>
-					<form id="hit" action="GameServlet">
-						<input type="hidden" name="formAction" value="hit">
+					<form id="hit" action="${pageContext.request.contextPath}/game/hit" method="post">
+<!--						<input type="hidden" name="formAction" value="hit">-->
 						<button>hit</button>
 					</form>
 					
-					<form id="stand" action="GameServlet">
-						<input type="hidden" name="formAction" value="stand">
+					<form id="stand" action="${pageContext.request.contextPath}/game/stand" method="post">
+<!--						<input type="hidden" name="formAction" value="stand">-->
 						<button>stand</button>
 					</form>
 				<%
@@ -183,14 +182,14 @@
 		<%
 	        }else{
 		%>
-			<p>ゲームを取得できませんでした<a href="user.jsp">ユーザー画面へ</a></p>
+			<p>ゲームを取得できませんでした<a href="${pageContext.request.contextPath}/user.jsp">ユーザー画面へ</a></p>
 		<%
 	        }
 		%>
 	<% 	
 		}else {
 	%>
-		<p>ログインしていません<a href="login.jsp">ログインページへ</a></p>
+		<p>ログインしていません<a href="${pageContext.request.contextPath}/login.jsp">ログインページへ</a></p>
 	<%
 		}
 	%>

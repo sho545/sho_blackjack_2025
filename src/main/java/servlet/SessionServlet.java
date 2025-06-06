@@ -53,7 +53,7 @@ public class SessionServlet extends HttpServlet {
 		String userName = null ;
 		String password = null ;
 		User loginUser = null ;
-		String nextPage = "login.jsp" ;
+		String nextPage = "/login.jsp" ;
 		String message = null ;
 		HttpSession session = request.getSession() ;
 		

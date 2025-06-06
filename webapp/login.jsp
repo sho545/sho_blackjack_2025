@@ -5,31 +5,47 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<title>ログイン画面</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ログイン</title>
+<%-- Google Fontsから美しい日本語フォントを読み込み --%>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/login.css">
 </head>
 <body>
-	<h1>ログイン</h1>
-	
-<!--	ここに※のコメントを表示するようにしたい-->
-	<%  String message = (String) request.getAttribute("message") ;
-	 	if(message != null && !message.isEmpty()){
-	%>
-		<p class="message"><%= message %></p>
-	<%
-	 	}
-	%>
-	
-	<form action="${pageContext.request.contextPath}/session/login" method="post">
-<!--		<input type="hidden" name="formAction" value="login" >-->
-		<dl>
-			<dt>user name</dt>
-				<dd><input type="text" name="userName" required></dd>
-			<dt>password</dt>
-				<dd><input type="password" name="password" required></dd>
-			<dt><button>ログイン</button></dt>
-		</dl>
-	</form>
-	
-	<a href="register.jsp">新規登録画面へ</a>
+
+    <div class="login-container">
+        <h1>ログイン</h1>
+        
+        <%-- JSTL(c:if)を使うことで、よりモダンで安全な記述にしています --%>
+        <c:if test="${not empty message}">
+            <p class="message">${message}</p>
+        </c:if>
+    
+        <%-- formタグのactionとmethod属性は変更していません --%>
+        <form action="${pageContext.request.contextPath}/session/login" method="post">
+            
+            <div class="form-group">
+                <label for="userName">ユーザー名</label>
+                <input type="text" id="userName" name="userName" placeholder="ユーザー名を入力" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="password">パスワード</label>
+                <input type="password" id="password" name="password" placeholder="パスワードを入力" required>
+            </div>
+            
+            <%-- formタグのbutton以外の内容は変更していません --%>
+            <button>ログイン</button>
+            
+        </form>
+        
+        <div class="register-link">
+            <a href="${pageContext.request.contextPath}/register.jsp">新しいアカウントを作成</a>
+        </div>
+    </div>
+
 </body>
 </html>
