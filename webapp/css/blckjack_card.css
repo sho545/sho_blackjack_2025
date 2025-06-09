@@ -68,17 +68,17 @@
 }
 
 /* --- スートの色 --- */
-.card.suit-spade .suit,
-.card.suit-spade .suit-big,
-.card.suit-club .suit,
-.card.suit-club .suit-big {
+.card.suit-3 .suit,
+.card.suit-3 .suit-big,
+.card.suit-4 .suit,
+.card.suit-4 .suit-big {
   color: #000; /* 黒 */
 }
 
-.card.suit-heart .suit,
-.card.suit-heart .suit-big,
-.card.suit-diamond .suit,
-.card.suit-diamond .suit-big {
+.card.suit-1 .suit,
+.card.suit-1 .suit-big,
+.card.suit-2 .suit,
+.card.suit-2 .suit-big {
   color: #D32F2F; /* 赤 */
 }
 

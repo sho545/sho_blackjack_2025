@@ -1,0 +1,52 @@
+@charset "UTF-8";
+
+/* ページの基本スタイル（他ページと共通） */
+body, html {
+	margin: 0;
+	padding: 0;
+    min-height: 100%;
+    font-family: 'Noto Sans JP', sans-serif;
+    background-color: #f0f2f5;
+}
+
+/* メインのコンテナ */
+.main-container {
+    padding: 30px 40px;
+    margin: 40px auto;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 700px; /* 少し幅を広げる */
+    box-sizing: border-box;
+    text-align: center;
+}
+
+/* メインタイトル */
+.main-container h1 {
+    margin: 0 0 30px 0;
+    font-size: 28px;
+    color: #333;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+
+/* 戻るボタンのスタイル */
+.btn-back {
+    display: inline-block;
+    padding: 12px 30px;
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    background-color: #f8f9fa;
+    color: #343a40;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+.btn-back:hover {
+    background-color: #e2e6ea;
+}

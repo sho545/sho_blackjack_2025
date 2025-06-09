@@ -16,28 +16,29 @@
 <html>
 <head>
 <meta charset="UTF-8">
-<link rel="stylesheet" type="text/css" href="/blackjack/css/blckjack_card.css">
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath }/css/blckjack_card.css">
 
 <!--	standからのディーラーの二枚目のカードオープン関数-->
-	<script type="text/javascript">
-		document.addEventListener("DOMContentLoaded", function(){
-			const standButton = document.getElementById("stand");
-			const hitButton = document.getElementById("hit") ;
+<!--	<script type="text/javascript">-->
+<!--		document.addEventListener("DOMContentLoaded", function(){-->
+<!--			const standButton = document.getElementById("stand");-->
+<!--			const hitButton = document.getElementById("hit") ;-->
 
-			if(standButton && hitButton){
-				standButton.addEventListener("click", function(event){
-					standButton.disabled = true ;
-					hitButton.disabled = true ;	
-				})
-			}
-		});
-	</script>
+<!--			if(standButton && hitButton){-->
+<!--				standButton.addEventListener("click", function(event){-->
+<!--					standButton.disabled = true ;-->
+<!--					hitButton.disabled = true ;	-->
+<!--				})-->
+<!--			}-->
+<!--		});-->
+<!--	</script>-->
+
 <title>ブラックジャック</title>
 </head>
 <body>
 
 	<%
-        // sessionからloginUserを取得
+         // sessionからloginUserを取得
          User loginUser = (User) session.getAttribute("loginUser") ;
         if(loginUser != null){
     %>

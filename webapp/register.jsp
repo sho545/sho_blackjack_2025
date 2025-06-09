@@ -5,31 +5,44 @@
 <html>
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<%-- Google Fontsから美しい日本語フォントを読み込み --%>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/login.css">
 <title>新規登録画面</title>
 </head>
 <body>
-	<h1>新規登録</h1>
+
+	<div class="register-container">
+		<h1>新規登録</h1>
+		
+		 	<c:if test="${not empty message}">	
+				<p class="message">${message}</p>
+			</c:if>
+		
+		<form action="${pageContext.request.contextPath }/RegisterServlet" method="post">
+			
+			<div class="form-group">
+				<label for="userName" >ユーザー名</label>
+					<input id="userName" type="text" name="userName" placeholder="ユーザー名を入力" required>
+			</div>
+			
+			<div class="form-group">
+				<label for="password">パスワード</label>
+					<input id="password" name="password" type="password" placeholder="パスワードを入力" required>
+			</div>
+			
+				<button class="register-button">新規登録</button>
+				
+		</form>
 	
-	<%  String message = (String) request.getAttribute("message") ;
-	 	if(message != null && !message.isEmpty()){
-	%>
-		<p class="message"><%= message %></p>
-	<%
-	 	}
-	%>
-	
-	<form action="RegisterServlet" method="post">
-		<input type="hidden" name="formAction" value="register">
-		<dl>
-			<dt>user name</dt>
-				<dd><input type="text" name="userName" required></dd>
-			<dt>password</dt>
-				<dd><input type="password" name="password" required></dd>
-			<dt><button>新規登録</button></dt>
-		</dl>
-	</form>
-	
-	<a href="login.jsp">ログイン画面へ</a>
+		<div class="link">
+			<a href="${pageContext.request.contextPath }/login.jsp">ログイン画面へ</a>
+		</div>
+	</div>
 
 </body>
 </html>

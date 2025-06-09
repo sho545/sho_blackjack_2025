@@ -22,6 +22,17 @@ body, html {
     text-align: center;
     box-sizing: border-box;
 }
+/*新規登録フォーム全体のコンテナ*/
+.register-container {
+    padding: 40px;
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    box-sizing: border-box;
+}
 
 /* h1タイトルのスタイル */
 h1 {
@@ -77,7 +88,7 @@ input[type="password"]:focus {
 }
 
 /* ログインボタンのスタイル */
-button {
+.login-button {
     width: 100%;
     padding: 14px;
     border: none;
@@ -91,23 +102,44 @@ button {
     margin-top: 10px;
 }
 
+/*登録ボタンのスタイル*/
+.register-button {
+        width: 100%;
+        padding: 14px;
+        border: none;
+        border-radius: 8px;
+        background-color: #28a745; /* 新規登録なので緑色に */
+        color: white;
+        font-size: 16px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.3s;
+        margin-top: 10px;
+}
+	
+
 /* ボタンにマウスが乗った時のスタイル */
-button:hover {
+.login-container button:hover {
     background-color: #0056b3; /* 少し濃い青色に */
 }
 
+/* 登録ボタンにマウスが乗った時のスタイル */
+.register-container button:hover {
+    background-color: #218838; /* 少し濃い緑色に */
+}
+
 /* 新規登録リンクのコンテナ */
-.register-link {
+.link {
     margin-top: 24px;
 }
 
-.register-link a {
+.link a {
     color: #007bff;
     text-decoration: none;
     font-weight: 700;
     transition: text-decoration 0.3s;
 }
 
-.register-link a:hover {
+.link a:hover {
     text-decoration: underline;
 }

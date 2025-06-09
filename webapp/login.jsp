@@ -19,12 +19,10 @@
     <div class="login-container">
         <h1>ログイン</h1>
         
-        <%-- JSTL(c:if)を使うことで、よりモダンで安全な記述にしています --%>
         <c:if test="${not empty message}">
             <p class="message">${message}</p>
         </c:if>
     
-        <%-- formタグのactionとmethod属性は変更していません --%>
         <form action="${pageContext.request.contextPath}/session/login" method="post">
             
             <div class="form-group">
@@ -37,12 +35,11 @@
                 <input type="password" id="password" name="password" placeholder="パスワードを入力" required>
             </div>
             
-            <%-- formタグのbutton以外の内容は変更していません --%>
-            <button>ログイン</button>
+            <button class="login-button">ログイン</button>
             
         </form>
         
-        <div class="register-link">
+        <div class="link">
             <a href="${pageContext.request.contextPath}/register.jsp">新しいアカウントを作成</a>
         </div>
     </div>

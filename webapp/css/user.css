@@ -1,0 +1,129 @@
+@charset "UTF-8";
+
+/* ページの基本スタイル（ログイン画面などと共通） */
+body, html {
+    margin: 0;
+    padding: 0;
+    min-height: 100%;
+    font-family: 'Noto Sans JP', sans-serif;
+    background-color: #f0f2f5;
+}
+
+/* メインのコンテナ */
+.dashboard-container {
+    padding: 30px 40px;
+    margin: 40px auto; /* 上下に余白を追加 */
+    background-color: white;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 600px; /* 少し幅を広げる */
+    box-sizing: border-box;
+}
+
+/* ユーザー歓迎ヘッダー */
+.user-header {
+    text-align: center;
+    margin-bottom: 30px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid #eee;
+}
+.user-header h1 {
+    margin: 0;
+    font-size: 28px;
+    color: #333;
+}
+.user-header p {
+    margin: 5px 0 0;
+    color: #888;
+    font-size: 14px;
+}
+
+/* 成功メッセージなどのスタイル */
+.message {
+    color: #155724;
+    background-color: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 30px;
+    font-size: 16px;
+    text-align: center;
+}
+
+/* アクションボタン/リンクのメニューエリア */
+.action-menu {
+    display: grid;
+    gap: 15px; /* 各ボタンの間の隙間 */
+}
+
+/* ボタンとリンクの共通スタイル */
+.btn {
+    display: block;
+    width: 100%;
+    padding: 15px;
+    border-radius: 8px;
+    text-align: center;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 700;
+    box-sizing: border-box;
+    border: none;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 12px rgba(0,0,0,0.15);
+}
+
+/* プライマリアクション (ゲームを始める) */
+.btn-primary {
+    background-color: #007bff;
+    color: white;
+}
+.btn-primary:hover {
+    background-color: #0069d9;
+}
+
+/* セカンダリアクション (戦績・ランキング) */
+.btn-secondary {
+    background-color: #f8f9fa;
+    color: #343a40;
+    border: 1px solid #ddd;
+}
+.btn-secondary:hover {
+    background-color: #e2e6ea;
+}
+
+/* アカウント管理アクション (削除・ログアウト) */
+.account-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #eee;
+    display: grid;
+    gap: 15px;
+}
+
+/* ログアウトボタン */
+.btn-logout {
+    background-color: #6c757d;
+    color: white;
+}
+.btn-logout:hover {
+    background-color: #5a6268;
+}
+
+/* ユーザー削除ボタン (危険な操作なので赤色に) */
+.btn-danger {
+    background-color: #dc3545;
+    color: white;
+}
+.btn-danger:hover {
+    background-color: #c82333;
+}
+
+/* formタグはデフォルトでマージンを持つのでリセット */
+form {
+	margin: 0;
+}
