@@ -1,0 +1,92 @@
+@charset "UTF-8" ;
+
+/*fa-crownの設定*/
+.ranking-container h1 .fa-crown {
+    color: #f9ca24;
+    margin-right: 10px;
+}
+
+/* ランキングリスト全体のスタイル */
+.ranking-list {
+    list-style: none; /* デフォルトの数字を消す */
+    padding: 0;
+    margin: 0;
+    counter-reset: ranking-counter; /* 順位表示用のカウンターを初期化 */
+}
+
+/* ランキングの各行のスタイル */
+.rank-item {
+    display: flex;
+    align-items: center;
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #e9ecef;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+.rank-item:hover {
+    transform: scale(1.02);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+/* 順位の数字のスタイル */
+.rank-number {
+    font-size: 24px;
+    font-weight: 900;
+    color: #6c757d;
+    width: 50px;
+    flex-shrink: 0; /* 幅を固定 */
+    position: relative;
+}
+/* 順位をCSSで自動生成 */
+.rank-item::before {
+    counter-increment: ranking-counter;
+    content: counter(ranking-counter);
+    font-size: 24px;
+    font-weight: 900;
+    color: #6c757d;
+    width: 50px;
+    flex-shrink: 0;
+    text-align: center;
+}
+
+/* ユーザー情報エリア */
+.user-info {
+    flex-grow: 1; /* 残りの幅をすべて使う */
+    padding: 0 20px;
+}
+.user-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #343a40;
+}
+.user-name .fa-medal {
+    margin-left: 8px;
+}
+.user-id {
+    font-size: 12px;
+    color: #888;
+}
+
+/* 1位から3位のメダルの色 */
+.rank-1 .fa-medal { color: #FFD700; } /* Gold */
+.rank-2 .fa-medal { color: #C0C0C0; } /* Silver */
+.rank-3 .fa-medal { color: #CD7F32; } /* Bronze */
+
+.rank-1 { background-color: #fffbe6; border-color: #ffe58f; }
+
+/* 戦績詳細エリア */
+.user-stats {
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    color: #495057;
+    flex-wrap: wrap; /* スマホ表示で折り返す */
+}
+
+.no-ranking {
+    text-align: center;
+    padding: 50px;
+    color: #6c757d;
+}

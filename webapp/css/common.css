@@ -1,6 +1,6 @@
 @charset "UTF-8";
 
-/* ページの基本スタイル（他ページと共通） */
+/* ページの基本スタイル */
 body, html {
 	margin: 0;
 	padding: 0;
@@ -8,6 +8,26 @@ body, html {
     font-family: 'Noto Sans JP', sans-serif;
     background-color: #f0f2f5;
 }
+
+/* h1タイトルのスタイル */
+h1 {
+    margin-top: 0;
+    margin-bottom: 24px;
+    color: #333;
+    font-weight: 700;
+}
+
+/* メッセージのスタイル */
+.message {
+    color: #d93025; 
+    background-color: #fbe9e7;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    padding: 12px;
+    margin-bottom: 20px;
+    font-size: 14px;
+}
+
 
 /* メインのコンテナ */
 .main-container {
@@ -17,7 +37,7 @@ body, html {
     border-radius: 12px;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 700px; /* 少し幅を広げる */
+    max-width: 700px; 
     box-sizing: border-box;
     text-align: center;
 }
@@ -29,6 +49,20 @@ body, html {
     color: #333;
     padding-bottom: 20px;
     border-bottom: 1px solid #eee;
+}
+
+/* ログイン/登録ボタンのスタイル */
+.certification-btn {
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 8px; 
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-top: 10px;
 }
 
 /* 戻るボタンのスタイル */
@@ -49,4 +83,20 @@ body, html {
 }
 .btn-back:hover {
     background-color: #e2e6ea;
+}
+
+/* リンクのコンテナ */
+.link {
+    margin-top: 24px;
+}
+
+.link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: 700;
+    transition: text-decoration 0.3s;
+}
+
+.link a:hover {
+    text-decoration: underline;
 }

@@ -89,8 +89,6 @@ public class GameSetupServlet extends HttpServlet {
 		User loginUser = (User)session.getAttribute("loginUser") ;
 		GameMaster gameMaster = (GameMaster) session.getAttribute("gameMaster") ;
 		
-		String nextPage = "/user.jsp" ;
-		
 		if(gameMaster != null) {
 			if(loginUser != null) {
 				Game game = gameMaster.getGame() ;
@@ -114,8 +112,7 @@ public class GameSetupServlet extends HttpServlet {
 					}
 				}
 				session.removeAttribute("gameMaster");
-				RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
-				requestDispatcher.forward(request, response);
+				response.sendRedirect(request.getContextPath() + "/user.jsp");
 			}else {
 				System.err.println("sessionからloginUserを取得できませんでした");
 			}

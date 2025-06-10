@@ -11,12 +11,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 
+<link rel="stylesheet" type="text/css" href="${pageContext.request.contextPath}/css/common.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/login.css">
+
 <title>新規登録画面</title>
 </head>
 <body>
 
-	<div class="register-container">
+	<div class="main-container register-container">
 		<h1>新規登録</h1>
 		
 		 	<c:if test="${not empty message}">	
@@ -35,7 +37,7 @@
 					<input id="password" name="password" type="password" placeholder="パスワードを入力" required>
 			</div>
 			
-				<button class="register-button">新規登録</button>
+				<button class="certification-btn register-btn">新規登録</button>
 				
 		</form>
 	

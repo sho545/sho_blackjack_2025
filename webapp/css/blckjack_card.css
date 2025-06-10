@@ -102,6 +102,11 @@
 .card.rank-12 .rank::before { content: "Q"; }
 .card.rank-13 .rank::before { content: "K"; }
 
+/*ランクの色*/
+.card .rank::before{
+	color: #333;
+}
+
 
 /* --- スートの記号 --- */
 /* Unicode文字をJSPで動的に設定 */

@@ -15,8 +15,8 @@
 <%-- アイコン表示ライブラリ (Font Awesome) --%>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
 
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/record.css">
-<link rel="stylesheet" href="${pageContext.request.contextPath}/css/rec_rank.css">
 </head>
 <body>
 
@@ -62,7 +62,7 @@
                     </div>
                 </div>
 
-                <button class="btn-back" onclick="history.back()">戻る</button>
+                <button class="btn btn-back" onclick="history.back()">戻る</button>
             </div>
         </c:when>
 

@@ -13,6 +13,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;700&display=swap" rel="stylesheet">
 
+<link rel="stylesheet" href="${pageContext.request.contextPath}/css/common.css">
 <link rel="stylesheet" href="${pageContext.request.contextPath}/css/user.css">
 
 <script>
@@ -31,7 +32,7 @@
     <c:choose>
         <%-- ログインしている場合の表示 --%>
         <c:when test="${not empty loginUser}">
-            <div class="dashboard-container">
+            <div class="main-container dashboard-container">
             
                 <div class="user-header">
                     <h1>${loginUser.userName}さん</h1>

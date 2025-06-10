@@ -1,24 +1,8 @@
 @charset "UTF-8";
 
-/* ページの基本スタイル（ログイン画面などと共通） */
-body, html {
-    margin: 0;
-    padding: 0;
-    min-height: 100%;
-    font-family: 'Noto Sans JP', sans-serif;
-    background-color: #f0f2f5;
-}
-
-/* メインのコンテナ */
+/* メインのコンテナ(最大幅だけ上書き) */
 .dashboard-container {
-    padding: 30px 40px;
-    margin: 40px auto; /* 上下に余白を追加 */
-    background-color: white;
-    border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
-    width: 100%;
-    max-width: 600px; /* 少し幅を広げる */
-    box-sizing: border-box;
+    max-width: 600px;  
 }
 
 /* ユーザー歓迎ヘッダー */
@@ -39,7 +23,7 @@ body, html {
     font-size: 14px;
 }
 
-/* 成功メッセージなどのスタイル */
+/* ログインメッセージなどのスタイル */
 .message {
     color: #155724;
     background-color: #d4edda;
