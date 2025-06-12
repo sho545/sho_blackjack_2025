@@ -7,10 +7,18 @@ public class User {
 	private String password ;
 	private int numberOfGames ;
 	private int victories ;
-	
+	private int chips ;
 	
 	//getter,setter
 	
+	public int getChips() {
+		return chips;
+	}
+
+	public void setChips(int chips) {
+		this.chips = chips;
+	}
+
 	public int getUserId() {
         return userId;
     }

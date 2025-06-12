@@ -37,6 +37,7 @@
                 <div class="user-header">
                     <h1>${loginUser.userName}さん</h1>
                     <p>ようこそ！</p>
+                    <p>あなたの残りチップは${loginUser.chips }枚です</p>
                 </div>
                 
                 <c:if test="${not empty message }">
@@ -51,7 +52,8 @@
                     
                     <%-- リンクもボタンのように見せる --%>
                     <a href="${pageContext.request.contextPath}/RecordServlet" class="btn btn-secondary">戦績表示</a>
-                    <a href="${pageContext.request.contextPath}/RankingServlet" class="btn btn-secondary">勝率ランキング</a>
+                    <a href="${pageContext.request.contextPath}/RankingServlet/winRate" class="btn btn-secondary">勝率ランキング</a>
+                    <a href="${pageContext.request.contextPath}/RankingServlet/chips" class="btn btn-secondary">チップ枚数ランキング</a>
                 </div>
                 
                 <div class="account-actions">

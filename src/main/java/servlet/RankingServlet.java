@@ -18,13 +18,37 @@ import user.User;
 /**
  * Servlet implementation class RankingServlet
  */
-@WebServlet("/RankingServlet")
+@WebServlet("/RankingServlet/*")
 public class RankingServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		String actionPath = request.getPathInfo() ;
+		
+		if(actionPath == null) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "アクションパスが指定されていません。");
+            return;
+		} else {
+			switch(actionPath) {
+				case "/winRate" :
+					winRateRanking(request,response) ;
+					break ;
+				case "/chips" :
+					chipsRanking(request,response) ;
+					break ;
+				default : 
+					response.sendError(HttpServletResponse.SC_BAD_REQUEST, "無効なアクションパスです: " + actionPath);
+		            break;
+			}
+		}
+		
+	}
+	
+	protected void winRateRanking(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
 		List<User> ranking = new ArrayList<>() ;
-		String nextPage = "ranking.jsp" ;
+		String nextPage = "/ranking.jsp" ;
 		try {
 			UserDao userDao = new UserDao() ;
 			ranking = userDao.getRanking5() ;
@@ -42,5 +66,24 @@ public class RankingServlet extends HttpServlet {
 		requestDispatcher.forward(request, response);
 	}
 
-	
+	protected void chipsRanking(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		List<User> ranking = new ArrayList<>() ;
+		String nextPage = "/ranking_chips.jsp" ;
+		try {
+			UserDao userDao = new UserDao() ;
+			ranking = userDao.getChipRanking5() ;
+			
+		}catch(SQLException e) {
+			System.err.println("データベースアクセス中にエラーが発生しました " + e.getMessage());
+		    e.printStackTrace(); 
+		}
+		if(ranking != null) {
+			request.setAttribute("ranking", ranking);
+		}else {
+			System.err.println("ランキングを取得できませんでした ") ;
+		}
+		RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
+		requestDispatcher.forward(request, response);
+	}
 }

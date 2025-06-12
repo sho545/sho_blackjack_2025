@@ -64,6 +64,86 @@ body, html {
 	transform: translateY(-10px);
 }
 
+/* --- ベットエリアのスタイル --- */
+
+.betting-area {
+    padding: 30px;
+    text-align: center;
+    background-color: rgba(0,0,0,0.2);
+    border-radius: 10px;
+}
+
+.current-chips {
+    margin-bottom: 25px;
+}
+
+.current-chips .label {
+    display: block;
+    font-size: 16px;
+    color: rgba(255,255,255,0.7);
+    margin-bottom: 5px;
+}
+
+.current-chips .value {
+    font-size: 32px;
+    font-weight: 900;
+    color: #ffdd57; /* チップなので金色に */
+    text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+}
+.current-chips .fa-coins {
+    margin-left: 8px;
+}
+
+.instruction {
+    margin: 0 0 15px 0;
+    color: #fff;
+}
+
+/* ベット入力フォームのレイアウト */
+.bet-form {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+}
+
+/* チップ入力欄のスタイル */
+.bet-input {
+    font-family: 'Noto Sans JP', sans-serif;
+    font-size: 20px;
+    font-weight: 700;
+    text-align: center;
+    padding: 12px;
+    border: 2px solid #ddd;
+    border-radius: 8px;
+    width: 150px; /* 幅を固定 */
+    transition: all 0.3s;
+}
+.bet-input:focus {
+    outline: none;
+    border-color: #ffdd57;
+    box-shadow: 0 0 0 3px rgba(255, 221, 87, 0.4);
+}
+
+/* ベットボタンのスタイル */
+.btn-bet {
+    /* 以前定義した .btn のスタイルをベースにする */
+    padding: 14px 30px;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    
+    /* 色をベット用に変更 */
+    background-color: #28a745; /* Goサインなので緑に */
+    color: white;
+}
+.btn-bet:hover {
+    background-color: #218838;
+}
+
 /* ゲーム情報とアクションエリア */
 .game-info {
     text-align: center;

@@ -81,7 +81,7 @@
                         <c:when test="${gamePhase == 'GAME_OVER'}">
                             <c:choose>
                                 <c:when test="${player.playerResult == 'WIN'}">
-                                    <p class="game-result result-win">あなたの勝ちです！</p>
+                                    <p class="game-result result-win">あなたの勝ちです！チップ${gettingChips }枚獲得です!!</p>
                                 </c:when>
                                 <c:when test="${player.playerResult == 'LOSE'}">
                                     <p class="game-result result-lose">あなたの負けです...</p>
@@ -96,7 +96,31 @@
                         </c:when>
 
                         <%-- ゲーム進行中のアクションボタン --%>
-                        <c:otherwise>
+                        <c:when test="${gamePhase == 'NOT_STARTED' }">
+                        	<div class="betting-area">
+	                        	<div class="current-chips">
+						            <span class="label">あなたの所持チップ</span>
+						            <span class="value">
+						                <fmt:formatNumber value="${loginUser.chips}" /> <i class="fa-solid fa-coins"></i>
+						            </span>
+						        </div>
+	
+						        <p class="instruction">ベットするチップの枚数を入力してください</p>
+						
+						        <div class="action-buttons">
+						            <%-- チップを決定するフォーム --%>
+						            <form id="chips" class="bet-form" action="${pageContext.request.contextPath}/gameSetup/chips" method="post">
+						                
+						    
+						                <input class="bet-input" name="chipsForGame" type="number" value="10" min="1" max="${loginUser.chips}" required>
+						                
+						                <button class="btn btn-bet">ベットして開始</button>
+						            </form>
+						        </div>
+							</div>     
+                        </c:when>
+                        
+                        <c:when test="${gamePhase == 'PLAYER_TURN' }">
                             <div class="action-buttons">
                                 <form id="hit" action="${pageContext.request.contextPath}/game/hit" method="post">
                                     <button class="btn btn-hit">Hit</button>
@@ -105,7 +129,7 @@
                                     <button class="btn btn-stand">Stand</button>
                                 </form>
                             </div>
-                        </c:otherwise>
+                        </c:when>
                     </c:choose>
                 </div>
 

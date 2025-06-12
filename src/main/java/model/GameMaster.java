@@ -15,17 +15,20 @@ public class GameMaster {
 	
 	private Game game ;
 	
-	//コンストラクタで与えられたgameでdeckをシャッフルし、initialカードを2枚ずつ配って
-	//ゲームの状態をINITIAL_DEALに
+	//コンストラクタで与えられたgameでdeckをシャッフルしてフェイズをnot_startedに
 	public GameMaster(Game game) {
-		
+		game.setGamePhase(Game.GamePhase.NOT_STARTED);
 		Deck deck = game.getDeck() ;
 		List<Card> remainingCards = deck.getList() ;
-		
-		game.setGamePhase(Game.GamePhase.INITIAL_DEAL) ;
 		//カードシャッフル
 		Collections.shuffle(remainingCards) ;
+	}
+	
+	//手札を2枚ずつ配ってフェイズをplayer_turnに
+	public void initialDeal(Game game) {
+		game.setGamePhase(Game.GamePhase.INITIAL_DEAL) ;
 		
+		Deck deck = game.getDeck() ;
 		Player player = game.getPlayer() ;
 		Dealer dealer = game.getDealer() ;
 		
@@ -47,7 +50,7 @@ public class GameMaster {
 	
 	//バーストチェックを行って、バーストの結果をgameにセット
 	public  void checkAndSetBust(Game game) {
-		BasePlayer player = game.getPlayer() ;
+		Player player = game.getPlayer() ;
 		BasePlayer dealer = game.getDealer() ;
 		
 		int playersSumOfHand = player.calculateSumOfHand() ;
@@ -57,11 +60,12 @@ public class GameMaster {
 		dealer.setSumOfHand(dealersSumOfHand);
 		
 		if(playersSumOfHand > 21) {
-			game.setGamePhase(Game.GamePhase.GAME_OVER);
 			player.setBust(true) ;
-		}else if(dealersSumOfHand > 21) {
+			player.setPlayerResult(Player.PlayerResult.LOSE);
 			game.setGamePhase(Game.GamePhase.GAME_OVER);
+		}else if(dealersSumOfHand > 21) {
 			dealer.setBust(true); 
+			game.setGamePhase(Game.GamePhase.GAME_OVER);
 		}
 	}
 	
@@ -71,13 +75,19 @@ public class GameMaster {
 		player.drawCards(game.getDeck());
 	}
 	
-	//dealerにカードを引かせる
+	//プレイヤーが初期カードで21になっていたときを除いてdealerにカードを引かせる
 	public void makeDealerDrawCards(Game game) {
 		game.setGamePhase(Game.GamePhase.DEALER_TURN);
-		BasePlayer dealer = game.getDealer() ;
-		int dealersSumOfHand = dealer.calculateSumOfHand() ;
-		dealer.setSumOfHand(dealersSumOfHand);
-		dealer.drawCards(game.getDeck());
+		//playerの手札を計算してセット
+		game.getPlayer().setSumOfHand(game.getPlayer().calculateSumOfHand());
+		if(game.getPlayer().getSumOfHand() == 21 && game.getPlayer().getHand().size() == 2) {
+			//初期カードでプレイヤーが21になっていたとき何もしない
+		} else {
+			BasePlayer dealer = game.getDealer() ;
+			int dealersSumOfHand = dealer.calculateSumOfHand() ;
+			dealer.setSumOfHand(dealersSumOfHand);
+			dealer.drawCards(game.getDeck());
+		}
 	}
 	
 	//勝敗チェックして終了フェーズをセット
@@ -103,12 +113,48 @@ public class GameMaster {
 				player.setPlayerResult(PlayerResult.LOSE) ;
 				game.setGamePhase(Game.GamePhase.GAME_OVER);
 			}else {
-				//引き分けの時は一旦負けとしておく
+				
 				player.setPlayerResult(PlayerResult.DRAW) ;
 				game.setGamePhase(Game.GamePhase.GAME_OVER);
 			}
 		}
 		
+	}
+	
+	//もらったgameのチップの増減を計算してユーザー情報のchipを書き換えして獲得したチップを返す
+	//checkGameOverの後に呼び出す
+	public int calculateChips(Game game) {
+		//残りのチップを計算
+		int chipsForGame = game.getPlayer().getChipsForGame() ;
+		int remainChips = game.getPlayer().getUser().getChips() - chipsForGame ;
+		//プラスされるチップ用の変数を用意
+		int gettingChips = 0 ;
+		//倍率決定のためにplayerの手札の合計と手札の枚数,勝敗を準備しておく
+		int playersPoint = game.getPlayer().calculateSumOfHand() ;
+		int numberOfPlayersCards = game.getPlayer().getHand().size() ;
+		Player.PlayerResult playersResult = game.getPlayer().getPlayerResult() ;
+
+		if(playersPoint == 21 && numberOfPlayersCards == 2 && playersResult == Player.PlayerResult.WIN) {
+			//最初の段階でブラックジャックで勝ったとき
+			gettingChips = (int) (chipsForGame * 1.5) ;
+		} else if (playersPoint == 21 && playersResult == Player.PlayerResult.WIN) {
+			//ブラックジャックになって勝ったとき
+			gettingChips = (int) (chipsForGame * 2.5) ;
+		} else if(playersResult == Player.PlayerResult.WIN) {
+			//ブラックジャック以外で勝ったとき
+			gettingChips = chipsForGame * 2 ;
+		}else if (playersResult == Player.PlayerResult.DRAW) {
+			//引き分けのとき
+			gettingChips = chipsForGame ;
+		} else if (playersResult == Player.PlayerResult.LOSE) {
+			//負けのとき
+			gettingChips = 0 ;
+		}
+		remainChips += gettingChips ;
+		//残りチップをuserに再セット
+		game.getPlayer().getUser().setChips(remainChips);
+		
+		return gettingChips ;
 	}
 	
 	//setter,getter
@@ -119,6 +165,7 @@ public class GameMaster {
 	public void setGame(Game game) {
 		this.game = game;
 	}
+	
 	
 	
 

@@ -44,6 +44,10 @@ public class GameSetupServlet extends HttpServlet {
 						start(request, response) ;
 						break ;
 						
+					case "/chips" :
+						chips(request,response) ;
+						break ;
+						
 					case "/over" :
 						over(request, response) ;
 						break ;
@@ -59,7 +63,7 @@ public class GameSetupServlet extends HttpServlet {
 		}
 	}
 	
-	//ゲームを始める(user.jsp)から最初の手札を表示(blackjack.jsp)
+	//ゲームを始める(user.jsp)から掛け金選択へ(blackjack.jsp)
 	public void start(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		HttpSession session = request.getSession(false) ;
@@ -73,7 +77,7 @@ public class GameSetupServlet extends HttpServlet {
 			gameMaster.setGame(game);
 			
 			session.setAttribute("gameMaster", gameMaster);
-			request.setAttribute("message", "hitしますか?standしますか?");
+			request.setAttribute("message", "チップは何枚賭けますか?");
 			RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
 			requestDispatcher.forward(request, response);
 			
@@ -82,7 +86,39 @@ public class GameSetupServlet extends HttpServlet {
 		}
 	}
 	
-	//ゲームを終了して戦績をデータベースに書き込んでユーザー画面へ
+	//掛け金選択(blackjack.jsp)から最初の手札配布(blackjack.jsp)
+	public void chips(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		HttpSession session = request.getSession(false) ;
+		GameMaster gameMaster = (GameMaster)session.getAttribute("gameMaster") ;
+		int chipsForGame = Integer.parseInt(request.getParameter("chipsForGame")) ;
+		
+		String nextPage = "/blackjack.jsp" ;
+		String message = null ;
+		
+		if(gameMaster != null) {
+			Game game = gameMaster.getGame() ;
+			int chips = game.getPlayer().getUser().getChips();
+			
+			if(chipsForGame <= chips && chipsForGame >= 0) {
+				game.getPlayer().setChipsForGame(chipsForGame);
+				gameMaster.initialDeal(game) ;
+				message = "hitしますか?standしますか?" ;
+			}else {
+				message = "chipが足りません。掛け金を選びなおしてください";
+			}
+			
+			session.setAttribute("gameMaster", gameMaster);
+			request.setAttribute("message", message);
+			RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
+			requestDispatcher.forward(request, response);
+			
+		}else {
+			System.err.println("sessionからloginUserを取得できませんでした");
+		}
+	}
+	
+	//ゲームを終了して戦績/chipをデータベースに書き込んでユーザー画面へ
 	public void over(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		HttpSession session = request.getSession(false) ;
@@ -98,6 +134,7 @@ public class GameSetupServlet extends HttpServlet {
 				if(playerResult == Player.PlayerResult.WIN) {
 					try {
 						userDao.victoriesPlus1(loginUser.getUserId()) ;
+						userDao.updateChips(loginUser) ;
 					}catch(SQLException e) {
 						System.err.println("データベースアクセス中にエラーが発生しました: " + e.getMessage());
 				        e.printStackTrace();
@@ -106,6 +143,7 @@ public class GameSetupServlet extends HttpServlet {
 				}else {
 					try {
 						userDao.numberOfGamesPlus1(loginUser.getUserId()) ;
+						userDao.updateChips(loginUser) ;
 					}catch(SQLException e) {
 						System.err.println("データベースアクセス中にエラーが発生しました: " + e.getMessage());
 				        e.printStackTrace();

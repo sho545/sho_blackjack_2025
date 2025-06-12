@@ -15,7 +15,8 @@ public class Player extends BasePlayer {
 	
 	private User user ;
 	private PlayerResult playerResult ;
-	
+	private int chipsForGame ;
+
 	//コンストラクタでloginUserを受け取って初期化
 	public Player(User loginUser) {
 		this.user = loginUser ;
@@ -46,6 +47,14 @@ public class Player extends BasePlayer {
 
 	public void setPlayerResult(PlayerResult playerResult) {
 		this.playerResult = playerResult;
+	}
+	
+	public int getChipsForGame() {
+		return chipsForGame;
+	}
+
+	public void setChipsForGame(int chipsForGame) {
+		this.chipsForGame = chipsForGame;
 	}
 		
 }

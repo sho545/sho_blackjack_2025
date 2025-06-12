@@ -72,6 +72,7 @@ public class GameManipulateServlet extends HttpServlet {
 			
 			if(playerIsBust) {
 				gameMaster.checkGameOver(game);
+				gameMaster.calculateChips(game) ;
 				message = "ゲーム終了です" ;
 			}else {
 				message = "hitしますか?standしますか?" ;
@@ -101,9 +102,11 @@ public class GameManipulateServlet extends HttpServlet {
 			gameMaster.makeDealerDrawCards(game) ;
 			gameMaster.checkAndSetBust(game) ;
 			gameMaster.checkGameOver(game) ;
+			int gettingChips = gameMaster.calculateChips(game) ;
 			
 			if(game.getGamePhase() == Game.GamePhase.GAME_OVER) {
-	
+				
+				request.setAttribute("gettingChips", gettingChips);
 				request.setAttribute("gameMaster", gameMaster);
 				request.setAttribute("message", message);
 				RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
