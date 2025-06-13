@@ -12,14 +12,17 @@ public class Game {
 		INITIAL_DEAL, //初期カード配布中
 		PLAYER_TURN,
 		DEALER_TURN,
-		GAME_OVER
+		GAME_OVER,
+		SPLIT_PLAYER_TURN
 	}
 	
 	private Player player ;
 	private Dealer dealer ;
 	private Deck deck ;
 	private GamePhase gamePhase ;
+	private Player splitPlayer ;
 	
+
 	//コンストラクタでloginUserを受け取って初期化
 	public Game(User loginUser) {
 		this.player = new Player(loginUser) ;
@@ -53,6 +56,15 @@ public class Game {
 	public void setGamePhase(GamePhase gamePhase) {
 		this.gamePhase = gamePhase;
 	}
+
+	public Player getSplitPlayer() {
+		return splitPlayer;
+	}
+
+	public void setSplitPlayer(Player splitPlayer) {
+		this.splitPlayer = splitPlayer;
+	}
+	
 	
 	
 

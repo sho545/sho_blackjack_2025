@@ -182,6 +182,10 @@ body, html {
 .btn-hit { background-color: #007bff; color: white; }
 .btn-stand { background-color: #dc3545; color: white; }
 .btn-gameover { background-color: #6c757d; color: white; }
+.btn-split {
+        background-color: #ffc107; /* 警告や注意を促す黄色 */
+        color: #212529;
+    }
 
 /* ゲーム結果表示 */
 .game-result {

@@ -11,6 +11,21 @@ public abstract class BasePlayer {
 	private List<Card> hand ;
 	private boolean isBust ;
 	private int sumOfHand ;
+	
+	//コンストラクタ
+	public BasePlayer() {
+        this.hand = new ArrayList<>();
+        this.isBust = false;
+        this.sumOfHand = 0;
+    }
+	
+	// コピー用のコンストラクタ
+    public BasePlayer(BasePlayer other) {
+        // 手札は、中身をコピーした新しいリストを作成（ディープコピー）
+        this.hand = new ArrayList<>(other.hand);
+        this.isBust = other.isBust;
+        this.sumOfHand = other.sumOfHand;
+    }
 
 	//deckからカードを引く(abstract)
 	public abstract void drawCards(Deck deck) ;

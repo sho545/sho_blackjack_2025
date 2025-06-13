@@ -26,7 +26,7 @@
     <c:set var="dealer" value="${game.dealer}" />
     <c:set var="player" value="${game.player}" />
     <c:set var="gamePhase" value="${game.gamePhase}" />
-
+    
     <c:choose>
         <%-- ログイン,ゲームセッションチェック --%>
         <c:when test="${not empty loginUser and not empty gameMaster}">
@@ -120,7 +120,18 @@
 							</div>     
                         </c:when>
                         
-                        <c:when test="${gamePhase == 'PLAYER_TURN' }">
+                        <c:when test="${not empty game.splitPlayer && gamePhase == 'SPLIT_PLAYER_TURN' }">
+                        	<div class="action-buttons">
+                                <form id="hit" action="${pageContext.request.contextPath}/game/splitHit" method="post">
+                                    <button class="btn btn-hit">Hit</button>
+                                </form>
+                                <form id="stand" action="${pageContext.request.contextPath}/game/splitStand" method="post">
+                                    <button class="btn btn-stand">Stand</button>
+                                </form>
+                             </div>
+                        </c:when>
+                        
+                        <c:when test="${gamePhase == 'PLAYER_TURN'}">
                             <div class="action-buttons">
                                 <form id="hit" action="${pageContext.request.contextPath}/game/hit" method="post">
                                     <button class="btn btn-hit">Hit</button>
@@ -128,8 +139,22 @@
                                 <form id="stand" action="${pageContext.request.contextPath}/game/stand" method="post">
                                     <button class="btn btn-stand">Stand</button>
                                 </form>
-                            </div>
+                             </div>
                         </c:when>
+                                <%-- スプリット可能な場合のみ、Splitボタンを表示  --%>
+                       <c:when test="${player.isSplit && gamePhase == 'INITIAL_DEAL'}">
+                       		 <div class="action-buttons">
+		                        <div class="split-choices">
+					                <form action="${pageContext.request.contextPath}/game/split" method="post">
+					                    <button class="btn btn-split">はい (Split)</button>
+					                </form>
+					                <form action="${pageContext.request.contextPath}/game/notSplit" method="post">
+					                    <button class="btn btn-secondary">いいえ (続行)</button>
+					                </form>
+                 				</div>
+                        	 </div>
+                       </c:when>
+                        
                     </c:choose>
                 </div>
 
@@ -139,7 +164,28 @@
                         <span>${loginUser.userName}さんの手札</span>
                         <span class="score">${player.sumOfHand}</span>
                     </h2>
-                    <div class="hand">
+                    <div class="hand"
+
+						 <c:if test="${not empty game.splitPlayer }">
+	                        <c:forEach var="card" items="${game.splitPlayer.hand}">
+	                            <div class="card suit-${card.mark } rank-${card.number}">
+								  <div class="card-inner">
+								    <div class="card-topleft">
+								      <span class="rank"></span>
+								      <span class="suit"></span>
+								    </div>
+								    <div class="card-center">
+								      <span class="suit-big"></span>
+								    </div>
+								    <div class="card-bottomright">
+								      <span class="rank"></span>
+								      <span class="suit"></span>
+								    </div>
+								  </div>
+								</div>
+	                        </c:forEach>
+                        </c:if>
+
                         <c:forEach var="card" items="${player.hand}">
                             <div class="card suit-${card.mark } rank-${card.number}">
 							  <div class="card-inner">
@@ -157,6 +203,7 @@
 							  </div>
 							</div>
                         </c:forEach>
+                        
                     </div>
                 </div>
             </div>

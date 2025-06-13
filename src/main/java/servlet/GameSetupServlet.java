@@ -103,7 +103,16 @@ public class GameSetupServlet extends HttpServlet {
 			if(chipsForGame <= chips && chipsForGame >= 0) {
 				game.getPlayer().setChipsForGame(chipsForGame);
 				gameMaster.initialDeal(game) ;
-				message = "hitしますか?standしますか?" ;
+				gameMaster.setIsSplit(game) ;
+				
+				if(!game.getPlayer().isSplit()) {
+					//splitでなかったとき
+					message = "hitしますか?standしますか?" ;
+					game.setGamePhase(Game.GamePhase.PLAYER_TURN);
+				} else {
+					//splitだったとき
+					message = "splitしますか?" ;
+				}
 			}else {
 				message = "chipが足りません。掛け金を選びなおしてください";
 			}

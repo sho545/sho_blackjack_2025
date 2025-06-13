@@ -11,6 +11,7 @@ import model.player.Dealer;
 import model.player.Player;
 import model.player.Player.PlayerResult;
 
+//このクラスはディーラーの役割のメソッドを提供するクラスです
 public class GameMaster {
 	
 	private Game game ;
@@ -24,7 +25,7 @@ public class GameMaster {
 		Collections.shuffle(remainingCards) ;
 	}
 	
-	//手札を2枚ずつ配ってフェイズをplayer_turnに
+	//手札を2枚ずつ配る
 	public void initialDeal(Game game) {
 		game.setGamePhase(Game.GamePhase.INITIAL_DEAL) ;
 		
@@ -38,14 +39,18 @@ public class GameMaster {
 		dealer.setHand(dealersInitialCards);
 		
 		//カードを2枚ずつ配る		
-		for(int i=0; i<2; i++) {
-			player.getHand().add(deck.drawCard()) ;
-		}
+//		for(int i=0; i<2; i++) {
+//			player.getHand().add(deck.drawCard()) ;
+//		}
+		Card sp4 = new Card(3,4) ;
+		Card hart4 = new Card(1,4) ;
+		
+		player.getHand().add(sp4);
+		player.getHand().add(hart4) ;
+		
 		for(int i=0; i<2; i++) {
 			dealer.getHand().add(deck.drawCard()) ;
 		}
-		//状態をplayer turnに
-		game.setGamePhase(Game.GamePhase.PLAYER_TURN) ;
 	}
 	
 	//バーストチェックを行って、バーストの結果をgameにセット
@@ -69,11 +74,36 @@ public class GameMaster {
 		}
 	}
 	
+	//splitチェックを行ってsplitならplayerにisSplit=trueをセット
+	public void setIsSplit(Game game) {
+		List<Card> playersHand = game.getPlayer().getHand() ;
+		if(playersHand.size() == 2 && playersHand.get(0).getNumber() == playersHand.get(1).getNumber()) {
+			//プレイヤーの手札が二枚でかつ同じ数字のとき
+			game.getPlayer().setSplit(true) ;			
+		} else {
+			game.getPlayer().setSplit(false);
+		}
+	}
+	
+	//split用のプレイヤーを準備してGameのsplitPlayerに格納
+	public void split(Game game) {
+		//playerの情報をコピーしてnew。フィールドとして同じアドレスを参照するのはuserとhandとplayerResult
+		//enumクラスはimmutableなので注意
+		Player splitPlayer = new Player(game.getPlayer()) ;
+		game.setSplitPlayer(splitPlayer);	
+	}
+	
 	//playerにhitさせる
 	public void playerHits(Game game) {
 		BasePlayer player = game.getPlayer() ;
 		player.drawCards(game.getDeck());
 	}
+	//splitPlayerにhitさせる
+	public void splitPlayerHits(Game game) {
+		BasePlayer splitPlayer = game.getSplitPlayer() ;
+		splitPlayer.drawCards(game.getDeck());
+	}
+	
 	
 	//プレイヤーが初期カードで21になっていたときを除いてdealerにカードを引かせる
 	public void makeDealerDrawCards(Game game) {

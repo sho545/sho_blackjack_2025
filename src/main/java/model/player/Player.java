@@ -16,11 +16,22 @@ public class Player extends BasePlayer {
 	private User user ;
 	private PlayerResult playerResult ;
 	private int chipsForGame ;
+	private boolean isSplit ;
 
 	//コンストラクタでloginUserを受け取って初期化
 	public Player(User loginUser) {
 		this.user = loginUser ;
-		 this.playerResult = PlayerResult.UNDEFINED;
+		this.playerResult = PlayerResult.UNDEFINED;
+	}
+	
+	//コピーコンストラクタ
+	//浅いコピー(newされたPlayerオブジェクトはplayerのuserとplayResultと同じ参照先を参照)
+	public Player(Player player) {
+		super(player) ;
+		this.user = player.user ;
+		this.playerResult = player.playerResult ;
+		this.chipsForGame = player.chipsForGame ;
+		this.isSplit = player.isSplit ;
 	}
 	
 	//カードを一枚引く
@@ -55,6 +66,19 @@ public class Player extends BasePlayer {
 
 	public void setChipsForGame(int chipsForGame) {
 		this.chipsForGame = chipsForGame;
+	}
+
+	public boolean isSplit() {
+		return isSplit;
+	}
+	
+	public boolean getIsSplit() {
+		return isSplit;
+	}
+
+
+	public void setSplit(boolean isSplit) {
+		this.isSplit = isSplit;
 	}
 		
 }
