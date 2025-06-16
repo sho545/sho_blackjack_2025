@@ -112,7 +112,7 @@
 						            <form id="chips" class="bet-form" action="${pageContext.request.contextPath}/gameSetup/chips" method="post">
 						                
 						    
-						                <input class="bet-input" name="chipsForGame" type="number" value="10" min="1" max="${loginUser.chips}" required>
+						                <input class="bet-input" name="chipsForGame" type="number" value="10" min="0" max="${loginUser.chips}" required>
 						                
 						                <button class="btn btn-bet">ベットして開始</button>
 						            </form>
@@ -164,7 +164,7 @@
                         <span>${loginUser.userName}さんの手札</span>
                         <span class="score">${player.sumOfHand}</span>
                     </h2>
-                    <div class="hand"
+                    <div class="hand">
 
 						 <c:if test="${not empty game.splitPlayer }">
 	                        <c:forEach var="card" items="${game.splitPlayer.hand}">

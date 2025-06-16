@@ -71,19 +71,24 @@ public class GameManipulateServlet extends HttpServlet {
 		}
 	}
 	
-	//splitの処理
+	//splitの処理したときの処理
+	//掛け金が足りないときは強制敵にnotsplitの状態へ
 	public void split(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 	
 		HttpSession session = request.getSession(false) ;
 		GameMaster gameMaster = (GameMaster) session.getAttribute("gameMaster") ;
 		String nextPage = "/blackjack.jsp" ;
-		String message = "hitしますか?standしますか?" ;
+		String message = "手札1のターンです。hitしますか?standしますか?" ;
 		
 		if(gameMaster != null) {
 			
 			Game game = gameMaster.getGame() ;
-			gameMaster.split(game);
-			game.setGamePhase(Game.GamePhase.PLAYER_TURN);
+			//掛け金の2倍がUserの持ってるチップ以下のときsplitを行う
+			if(game.getPlayer().getChipsForGame()*2 <= game.getPlayer().getUser().getChips()) {
+				gameMaster.split(game);
+			} else {
+				message="チップが足りないためsplitできません" ;
+			}
 			
 			request.setAttribute("gameMaster", gameMaster);
 			request.setAttribute("message", message);
@@ -128,15 +133,13 @@ public class GameManipulateServlet extends HttpServlet {
 		
 		if(gameMaster != null) {	
 			Game game = gameMaster.getGame() ;
-			gameMaster.playerHits(game);
+			gameMaster.splitPlayerHits(game);
 			gameMaster.checkAndSetBust(game) ;
-			boolean playerIsBust = game.getPlayer().isBust() ;
+			boolean splitPlayerIsBust = game.getSplitPlayer().isBust() ;
 			
-			if(playerIsBust) {
-				gameMaster.checkGameOver(game);
-				gameMaster.calculateChips(game) ;
+			if(splitPlayerIsBust) {
 				game.setGamePhase(Game.GamePhase.PLAYER_TURN);
-				message = "" ;
+				message = "手札2のターンです。hitしますか？standしますか？" ;
 			}else {
 				message = "hitしますか?standしますか?" ;
 			}
@@ -157,26 +160,16 @@ public class GameManipulateServlet extends HttpServlet {
 		HttpSession session = request.getSession(false) ;
 		GameMaster gameMaster = (GameMaster) session.getAttribute("gameMaster") ;
 		String nextPage = "/blackjack.jsp" ;
-		String message = "ゲーム終了です" ;
+		String message = "手札2のターンです。hitしますか？standしますか？" ;
 		
 		if(gameMaster != null) {
-			
 			Game game = gameMaster.getGame() ;
-			gameMaster.makeDealerDrawCards(game) ;
-			gameMaster.checkAndSetBust(game) ;
-			gameMaster.checkGameOver(game) ;
-			int gettingChips = gameMaster.calculateChips(game) ;
+			game.setGamePhase(Game.GamePhase.PLAYER_TURN);
 			
-			if(game.getGamePhase() == Game.GamePhase.GAME_OVER) {
-				
-				request.setAttribute("gettingChips", gettingChips);
-				request.setAttribute("gameMaster", gameMaster);
-				request.setAttribute("message", message);
-				RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
-				requestDispatcher.forward(request, response);
-			}else {
-				System.err.println("ゲームフェーズが終了になっていません");
-			}
+			request.setAttribute("gameMaster", gameMaster);
+			request.setAttribute("message", message);
+			RequestDispatcher requestDispatcher = request.getRequestDispatcher(nextPage);
+			requestDispatcher.forward(request, response);
 			
 		}else {
 			System.err.println("gameMasterを取得できませんでした");

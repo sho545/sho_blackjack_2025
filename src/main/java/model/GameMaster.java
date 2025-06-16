@@ -27,6 +27,7 @@ public class GameMaster {
 	
 	//手札を2枚ずつ配る
 	public void initialDeal(Game game) {
+		System.out.println("initialDealメソッドが呼び出されました");
 		game.setGamePhase(Game.GamePhase.INITIAL_DEAL) ;
 		
 		Deck deck = game.getDeck() ;
@@ -35,8 +36,6 @@ public class GameMaster {
 		
 		List<Card> playersInitialCards = new ArrayList<>() ;
 		List<Card> dealersInitialCards = new ArrayList<>() ;
-		player.setHand(playersInitialCards);
-		dealer.setHand(dealersInitialCards);
 		
 		//カードを2枚ずつ配る		
 //		for(int i=0; i<2; i++) {
@@ -51,6 +50,8 @@ public class GameMaster {
 		for(int i=0; i<2; i++) {
 			dealer.getHand().add(deck.drawCard()) ;
 		}
+		player.setHand(playersInitialCards);
+		dealer.setHand(dealersInitialCards);
 	}
 	
 	//バーストチェックを行って、バーストの結果をgameにセット
@@ -72,6 +73,14 @@ public class GameMaster {
 			dealer.setBust(true); 
 			game.setGamePhase(Game.GamePhase.GAME_OVER);
 		}
+		//splitPlayerがいればsplitPlayerのバーストも判定
+		if(game.getSplitPlayer() != null) {
+			int splitPlayersSumOfHand = game.getSplitPlayer().calculateSumOfHand() ;
+			if(splitPlayersSumOfHand > 21) {
+				game.getSplitPlayer().setBust(true);
+				game.setGamePhase(Game.GamePhase.PLAYER_TURN) ;
+			}
+		}
 	}
 	
 	//splitチェックを行ってsplitならplayerにisSplit=trueをセット
@@ -85,12 +94,24 @@ public class GameMaster {
 		}
 	}
 	
-	//split用のプレイヤーを準備してGameのsplitPlayerに格納
+	//split用のプレイヤーを準備して手札をスプリット、カードを一枚ずつ配ってGameのsplitPlayerに格納
+	//ゲームフェーズをsplitPlayerターンへ
 	public void split(Game game) {
 		//playerの情報をコピーしてnew。フィールドとして同じアドレスを参照するのはuserとhandとplayerResult
 		//enumクラスはimmutableなので注意
-		Player splitPlayer = new Player(game.getPlayer()) ;
-		game.setSplitPlayer(splitPlayer);	
+		Player player = game.getPlayer() ;
+		Player splitPlayer = new Player(player) ;
+		//splitPlayerのカードをセット
+		splitPlayer.getHand().remove(1) ;
+		splitPlayer.drawCards(game.getDeck());
+		//playerのカードをセット
+		player.getHand().remove(0) ;
+		player.drawCards(game.getDeck());
+		//fameに新しいplayerとsplitPlayerをセット
+		game.setSplitPlayer(splitPlayer);
+		game.setPlayer(player);
+		//ゲームフェーズをsplitPlayerのターンにセット
+		game.setGamePhase(Game.GamePhase.SPLIT_PLAYER_TURN);
 	}
 	
 	//playerにhitさせる
@@ -122,8 +143,18 @@ public class GameMaster {
 	
 	//勝敗チェックして終了フェーズをセット
 	public void checkGameOver(Game game) {
+		
 		Player player = game.getPlayer() ;
 		Dealer dealer = game.getDealer() ;
+		
+		//splitPlayerがいるときはsplitPlayerがバストのときLOSEをセット
+		if(game.getSplitPlayer() != null) {
+			Player splitPlayer = game.getSplitPlayer() ;
+			if(splitPlayer.isBust() == true) {
+				splitPlayer.setPlayerResult(PlayerResult.LOSE);
+			}
+		}
+		
 		if(player.isBust() == true) {
 			player.setPlayerResult(PlayerResult.LOSE) ;
 			game.setGamePhase(Game.GamePhase.GAME_OVER);
@@ -135,6 +166,20 @@ public class GameMaster {
 			dealer.setSumOfHand(dealer.calculateSumOfHand());
 			int playersSumOfHand = player.getSumOfHand() ;
 			int dealersSumOfHand = dealer.getSumOfHand() ;
+			
+			//splitPlayerがいるときはsplitPlayerの結果をセット
+			if(game.getSplitPlayer() != null && game.getSplitPlayer().isBust() == false) {
+				Player splitPlayer = game.getSplitPlayer() ;
+				splitPlayer.setSumOfHand(splitPlayer.calculateSumOfHand());
+				int splitPlayersSumOfHand = splitPlayer.getSumOfHand() ;
+				if(splitPlayersSumOfHand > dealersSumOfHand) {
+					splitPlayer.setPlayerResult(PlayerResult.WIN);
+				} else if(splitPlayersSumOfHand < dealersSumOfHand) {
+					splitPlayer.setPlayerResult(PlayerResult.LOSE);
+				} else {
+					splitPlayer.setPlayerResult(PlayerResult.DRAW);
+				}
+			}
 			
 			if(playersSumOfHand > dealersSumOfHand) {
 				player.setPlayerResult(PlayerResult.WIN) ;
