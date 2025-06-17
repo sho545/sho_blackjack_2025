@@ -25,7 +25,7 @@ public class GameManipulateServlet extends HttpServlet {
 		Game.GamePhase gamePhase = gameMaster.getGame().getGamePhase() ;
 		
 		//GamePhaseチェック
-		if(gamePhase == Game.GamePhase.PLAYER_TURN || gamePhase == Game.GamePhase.INITIAL_DEAL) {
+		if(gamePhase == Game.GamePhase.INITIAL_DEAL || gamePhase == Game.GamePhase.PLAYER_TURN || gamePhase == Game.GamePhase.SPLIT_PLAYER_TURN) {
 		
 			String actionPath = request.getPathInfo() ; // ServletPathの後の値
 			
@@ -125,7 +125,7 @@ public class GameManipulateServlet extends HttpServlet {
 	
 	//splitHitの処理
 	public void splitHit(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	
+		
 		HttpSession session = request.getSession(false) ;
 		GameMaster gameMaster = (GameMaster) session.getAttribute("gameMaster") ;
 		String nextPage = "/blackjack.jsp" ;
@@ -134,11 +134,11 @@ public class GameManipulateServlet extends HttpServlet {
 		if(gameMaster != null) {	
 			Game game = gameMaster.getGame() ;
 			gameMaster.splitPlayerHits(game);
+			//splitPlayerがbustしていたらgamePhaseはplayer_turnになっている
 			gameMaster.checkAndSetBust(game) ;
 			boolean splitPlayerIsBust = game.getSplitPlayer().isBust() ;
 			
 			if(splitPlayerIsBust) {
-				game.setGamePhase(Game.GamePhase.PLAYER_TURN);
 				message = "手札2のターンです。hitしますか？standしますか？" ;
 			}else {
 				message = "hitしますか?standしますか?" ;

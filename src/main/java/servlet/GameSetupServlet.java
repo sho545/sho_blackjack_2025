@@ -100,16 +100,8 @@ public class GameSetupServlet extends HttpServlet {
 			Game game = gameMaster.getGame() ;
 			int chips = game.getPlayer().getUser().getChips();
 			
-			// if文の直前に追加
-			System.out.println("--- チップ数チェック ---");
-			System.out.println("ベットしようとしている額 (chipsForGame): " + chipsForGame);
-			System.out.println("プレイヤーの現在の所持チップ (chips): " + chips);
-			System.out.println("-----------------------");
-			
 			if(chipsForGame <= chips && chipsForGame >= 0) {
 				game.getPlayer().setChipsForGame(chipsForGame);
-				
-				System.out.println("initialDealを呼び出します");
 				
 				gameMaster.initialDeal(game) ;
 				gameMaster.setIsSplit(game) ;
