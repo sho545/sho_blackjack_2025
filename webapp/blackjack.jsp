@@ -77,8 +77,11 @@
                     <p class="message">${message}</p>
                     
                     <c:choose>
-                        <%-- ゲーム終了時の結果表示 --%>
-                        <c:when test="${gamePhase == 'GAME_OVER'}">
+                    
+                    	<%-- ゲーム終了時の結果表示 --%>
+                    	
+                        <%--splitが起こらなかったときの結果画面 --%>
+                        <c:when test="${gamePhase == 'GAME_OVER' && game.splitPlayer == null}">
                             <c:choose>
                                 <c:when test="${player.playerResult == 'WIN'}">
                                     <p class="game-result result-win">あなたの勝ちです！チップ${gettingChips }枚獲得です!!</p>
@@ -94,8 +97,15 @@
                                 <button class="btn btn-gameover">ゲーム終了</button>
                             </form>
                         </c:when>
+                        
+                        <%--splitが起こったときの結果画面 --%>
+                        <c:if test="${not empty game.splitPlayer }">
+                        	<p class="game-result">チップ${gettingChhips }枚獲得です!!</p>
+                        </c:if>
 
                         <%-- ゲーム進行中のアクションボタン --%>
+                        
+                        <%--チップ選択画面 --%>
                         <c:when test="${gamePhase == 'NOT_STARTED' }">
                         	<div class="betting-area">
 	                        	<div class="current-chips">
@@ -103,23 +113,33 @@
 						            <span class="value">
 						                <fmt:formatNumber value="${loginUser.chips}" /> <i class="fa-solid fa-coins"></i>
 						            </span>
-						        </div>
-	
+						        </div>	
 						        <p class="instruction">ベットするチップの枚数を入力してください</p>
-						
 						        <div class="action-buttons">
 						            <%-- チップを決定するフォーム --%>
-						            <form id="chips" class="bet-form" action="${pageContext.request.contextPath}/gameSetup/chips" method="post">
-						                
-						    
-						                <input class="bet-input" name="chipsForGame" type="number" value="10" min="0" max="${loginUser.chips}" required>
-						                
+						            <form id="chips" class="bet-form" action="${pageContext.request.contextPath}/gameSetup/chips" method="post">			                
+						                <input class="bet-input" name="chipsForGame" type="number" value="10" min="0" max="${loginUser.chips}" required>		                
 						                <button class="btn btn-bet">ベットして開始</button>
 						            </form>
 						        </div>
 							</div>     
+                        </c:when
+
+						<%-- Split選択画面  --%>
+                        <c:when test="${player.isSplit && gamePhase == 'INITIAL_DEAL'}">
+                       		 <div class="action-buttons">
+		                        <div class="split-choices">
+					                <form action="${pageContext.request.contextPath}/game/split" method="post">
+					                    <button class="btn btn-split">はい (Split)</button>
+					                </form>
+					                <form action="${pageContext.request.contextPath}/game/notSplit" method="post">
+					                    <button class="btn btn-notSplit">いいえ (続行)</button>
+					                </form>
+                 				</div>
+                        	 </div>
                         </c:when>
                         
+                        <%--splitの際の1つ目の手札のアクションボタン --%>
                         <c:when test="${not empty game.splitPlayer && gamePhase == 'SPLIT_PLAYER_TURN' }">
                         	<div class="action-buttons">
                                 <form id="hit" action="${pageContext.request.contextPath}/game/splitHit" method="post">
@@ -131,6 +151,7 @@
                              </div>
                         </c:when>
                         
+                        <%-- splitの一組目終了後、または通常プレイの際のアクションボタン--%>
                         <c:when test="${gamePhase == 'PLAYER_TURN'}">
                             <div class="action-buttons">
                                 <form id="hit" action="${pageContext.request.contextPath}/game/hit" method="post">
@@ -141,19 +162,6 @@
                                 </form>
                              </div>
                         </c:when>
-                                <%-- スプリット可能な場合のみ、Splitボタンを表示  --%>
-                       <c:when test="${player.isSplit && gamePhase == 'INITIAL_DEAL'}">
-                       		 <div class="action-buttons">
-		                        <div class="split-choices">
-					                <form action="${pageContext.request.contextPath}/game/split" method="post">
-					                    <button class="btn btn-split">はい (Split)</button>
-					                </form>
-					                <form action="${pageContext.request.contextPath}/game/notSplit" method="post">
-					                    <button class="btn btn-secondary">いいえ (続行)</button>
-					                </form>
-                 				</div>
-                        	 </div>
-                       </c:when>
                         
                     </c:choose>
                 </div>
@@ -207,6 +215,7 @@
                     </div>
                 </div>
             </div>
+
         </c:when>
 
         <%-- ログインしていない、またはゲームが始まっていない場合 --%>
