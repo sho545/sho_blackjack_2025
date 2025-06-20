@@ -134,11 +134,11 @@ public class GameManipulateServlet extends HttpServlet {
 		if(gameMaster != null) {	
 			Game game = gameMaster.getGame() ;
 			gameMaster.splitPlayerHits(game);
-			//splitPlayerがbustしていたらgamePhaseはplayer_turnになっている
 			gameMaster.checkAndSetBust(game) ;
 			boolean splitPlayerIsBust = game.getSplitPlayer().isBust() ;
 			
 			if(splitPlayerIsBust) {
+				game.setGamePhase(Game.GamePhase.PLAYER_TURN) ;
 				message = "手札2のターンです。hitしますか？standしますか？" ;
 			}else {
 				message = "hitしますか?standしますか?" ;
@@ -155,6 +155,7 @@ public class GameManipulateServlet extends HttpServlet {
 	}
 			
 	//splitStandの処理
+	//ゲームフェイズをplayer turnにしてゲーム画面に返還
 	public void splitStand(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
 		HttpSession session = request.getSession(false) ;
@@ -193,9 +194,16 @@ public class GameManipulateServlet extends HttpServlet {
 			boolean playerIsBust = game.getPlayer().isBust() ;
 			
 			if(playerIsBust) {
+				//splitPlayerかplayerがbustでないときだけディーラーのターンが発生
+				gameMaster.makeDealerDrawCards(game) ;
 				gameMaster.checkGameOver(game);
-				gameMaster.calculateChips(game) ;
-				message = "ゲーム終了です" ;
+				gameMaster.checkGameOver(game);
+				//ゲーム終了フェーズを確認して獲得チップ取得
+				if(game.getGamePhase() == Game.GamePhase.GAME_OVER) {
+					int gettingChips = gameMaster.calculateChips(game) ;
+					request.setAttribute("gettingChips", gettingChips);
+					message = "ゲーム終了です" ;
+				}
 			}else {
 				message = "hitしますか?standしますか?" ;
 			}
@@ -221,11 +229,9 @@ public class GameManipulateServlet extends HttpServlet {
 		if(gameMaster != null) {
 			
 			Game game = gameMaster.getGame() ;
-			gameMaster.checkAndSetBust(game) ;
 			//splitPlayerかplayerがbustでないときだけディーラーのターンが発生
-			if((game.getPlayer().isBust() == false) || (game.getSplitPlayer() != null && game.getSplitPlayer().isBust() == false)) {
-				gameMaster.makeDealerDrawCards(game) ;
-			}
+			gameMaster.makeDealerDrawCards(game) ;
+			gameMaster.checkAndSetBust(game);
 			gameMaster.checkGameOver(game) ;
 			int gettingChips = gameMaster.calculateChips(game) ;
 			
