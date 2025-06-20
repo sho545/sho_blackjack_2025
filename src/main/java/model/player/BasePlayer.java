@@ -95,6 +95,10 @@ public abstract class BasePlayer {
 	public boolean isBust() {
 		return isBust;
 	}
+	public boolean getIsBust() {
+		return isBust;
+	}
+	
 
 	public void setBust(boolean isBust) {
 		this.isBust = isBust;

@@ -121,21 +121,16 @@ public class GameMaster {
 	}
 	
 	
-	//プレイヤーが初期カードで21になっていたときを除いてdealerにカードを引かせる
+	//dealerにカードを引かせる
 	public void makeDealerDrawCards(Game game) {
 		game.setGamePhase(Game.GamePhase.DEALER_TURN);
-		//playerの手札を計算してセット
-		game.getPlayer().setSumOfHand(game.getPlayer().calculateSumOfHand());
-		if(game.getPlayer().getSumOfHand() == 21 && game.getPlayer().getHand().size() == 2) {
-			//初期カードでプレイヤーが21になっていたとき何もしない
-		} else {
-			BasePlayer dealer = game.getDealer() ;
-			int dealersSumOfHand = dealer.calculateSumOfHand() ;
-			dealer.setSumOfHand(dealersSumOfHand);
-			dealer.drawCards(game.getDeck());
-		}
+		BasePlayer dealer = game.getDealer() ;
+		int dealersSumOfHand = dealer.calculateSumOfHand() ;
+		dealer.setSumOfHand(dealersSumOfHand);
+		dealer.drawCards(game.getDeck());
 	}
 	
+	//要修正
 	//勝敗チェックして終了フェーズをセット
 	public void checkGameOver(Game game) {
 		
@@ -152,7 +147,6 @@ public class GameMaster {
 		
 		if(player.isBust() == true) {
 			player.setPlayerResult(PlayerResult.LOSE) ;
-			game.setGamePhase(Game.GamePhase.GAME_OVER);
 		}else if(dealer.isBust() == true) {
 			player.setPlayerResult(PlayerResult.WIN) ;
 			game.setGamePhase(Game.GamePhase.GAME_OVER);
@@ -190,6 +184,7 @@ public class GameMaster {
 		}
 		
 	}
+	
 	
 	//もらったgameのチップの増減を計算してユーザー情報のchipを書き換えして獲得したチップを返す
 	//checkGameOverの後に呼び出す

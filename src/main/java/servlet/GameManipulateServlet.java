@@ -221,8 +221,11 @@ public class GameManipulateServlet extends HttpServlet {
 		if(gameMaster != null) {
 			
 			Game game = gameMaster.getGame() ;
-			gameMaster.makeDealerDrawCards(game) ;
 			gameMaster.checkAndSetBust(game) ;
+			//splitPlayerかplayerがbustでないときだけディーラーのターンが発生
+			if((game.getPlayer().isBust() == false) || (game.getSplitPlayer() != null && game.getSplitPlayer().isBust() == false)) {
+				gameMaster.makeDealerDrawCards(game) ;
+			}
 			gameMaster.checkGameOver(game) ;
 			int gettingChips = gameMaster.calculateChips(game) ;
 			
