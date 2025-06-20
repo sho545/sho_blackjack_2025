@@ -46,7 +46,8 @@ public class GameMaster {
 		for(int i=0; i<2; i++) {
 			dealer.getHand().add(deck.drawCard()) ;
 		}
-		
+		player.setSumOfHand(player.calculateSumOfHand());
+		dealer.setSumOfHand(dealer.calculateSumOfHand());
 	}
 	
 	//バーストチェックを行って、バーストの結果をgameにセット
@@ -103,7 +104,10 @@ public class GameMaster {
 		//playerのカードをセット
 		player.getHand().remove(0) ;
 		player.drawCards(game.getDeck());
-		//fameに新しいplayerとsplitPlayerをセット
+		//playerとsplitPlayerのカードの合計をセット
+		splitPlayer.setSumOfHand(splitPlayer.calculateSumOfHand());
+		player.setSumOfHand(player.calculateSumOfHand());
+		//gameに新しいplayerとsplitPlayerをセット
 		game.setSplitPlayer(splitPlayer);
 		game.setPlayer(player);
 		//ゲームフェーズをsplitPlayerのターンにセット

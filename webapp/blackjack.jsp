@@ -96,7 +96,7 @@
 	                        <%-- 2. ベット画面 --%>
 	                        <c:when test="${gamePhase == 'NOT_STARTED' }">
 	                        	<div class="betting-area">
-							        <p class="instruction">ベットするチップの枚数を入力してください</p>
+							        <p class="instruction">ベットするチップの枚数を入力してください(所持チップ数${loginUser.chips }枚)</p>
 							        <form id="chips" class="bet-form" action="${pageContext.request.contextPath}/gameSetup/chips" method="post">			                
 						                <input class="bet-input" name="chipsForGame" type="number" value="10" min="0" max="${loginUser.chips}" required>		                
 						                <button class="btn btn-bet">ベットして開始</button>
@@ -106,7 +106,6 @@
 	                        
 	                        <%-- 3. スプリット選択画面 --%>
 	                        <c:when test="${player.isSplit && gamePhase == 'INITIAL_DEAL'}">
-	                       		<p class="instruction">スプリットしますか？</p>
 	                       		<div class="split-choices">
 					                <form action="${pageContext.request.contextPath}/game/split" method="post"><button class="btn btn-split">はい (Split)</button></form>
 					                <form action="${pageContext.request.contextPath}/game/notSplit" method="post"><button class="btn btn-not-split">いいえ (続行)</button></form>
@@ -138,7 +137,7 @@
                				<%-- 手札1(splitPlayer)の手札を表示する欄 --%>
 	                			<div class="hand-area splitPlayer-area">
 				                    <h2><span>手札1</span>
-				                    		<span class="value">${splitPlayer.sumOfHand }</span>
+				                    		<span class="score">${splitPlayer.sumOfHand }</span>
 				                    		<span class="bust">
 				                    			<c:if test="${splitPlayer.isBust == true }">
 				                    				bustです
@@ -172,7 +171,7 @@
                				<div class="hand-area player-area">
 			                    <h2>
 			                    		<span>手札2</span>
-			                    		<span class="value">${player.sumOfHand }</span>
+			                    		<span class="score">${player.sumOfHand }</span>
 			                    		<span class="bust">
 			                    			<c:if test="${player.isBust == true }">
 			                    				bustです
