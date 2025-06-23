@@ -35,7 +35,7 @@
             <div class="main-container dashboard-container">
             
                 <div class="user-header">
-                    <h1>${loginUser.userName}さん</h1>
+                    <h1>${loginUser.userName}さん(id : ${loginUser.userId })</h1>
                     <p>ようこそ！</p>
                     <p>あなたの残りチップは${loginUser.chips }枚です</p>
                 </div>

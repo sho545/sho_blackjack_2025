@@ -34,14 +34,14 @@ public class GameMaster {
 		Dealer dealer = game.getDealer() ;
 		
 		//カードを2枚ずつ配る		
-//		for(int i=0; i<2; i++) {
-//			player.getHand().add(deck.drawCard()) ;
-//		}
-		Card sp4 = new Card(3,4) ;
-		Card hart4 = new Card(1,4) ;
-		
-		player.getHand().add(sp4);
-		player.getHand().add(hart4) ;
+		for(int i=0; i<2; i++) {
+			player.getHand().add(deck.drawCard()) ;
+		}
+//		Card sp1 = new Card(3,1) ;
+//		Card hart1 = new Card(1,1) ;
+//		
+//		player.getHand().add(sp1);
+//		player.getHand().add(hart1) ;
 		
 		for(int i=0; i<2; i++) {
 			dealer.getHand().add(deck.drawCard()) ;
