@@ -16,6 +16,12 @@ public class Card {
 		}
 	}
 	
+	//コピーコンストラクタ
+	public Card(Card card) {
+		this.mark = card.mark ;
+		this.number = card.number ;
+	}
+	
 	
 	//getter
 	public int getMark() {

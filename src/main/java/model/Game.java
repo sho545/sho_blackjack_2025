@@ -1,5 +1,7 @@
 package model;
 
+import java.util.List;
+
 import model.card.Deck;
 import model.player.Dealer;
 import model.player.Player;
@@ -13,31 +15,25 @@ public class Game {
 		PLAYER_TURN,
 		DEALER_TURN,
 		GAME_OVER,
-		SPLIT_PLAYER_TURN
 	}
 	
-	private Player player ;
+	private List<Player> players ;
 	private Dealer dealer ;
 	private Deck deck ;
 	private GamePhase gamePhase ;
-	private Player splitPlayer ;
 	
 
-	//コンストラクタでloginUserを受け取って初期化
-	public Game(User loginUser) {
-		this.player = new Player(loginUser) ;
+	//コンストラクタでusersを受け取って初期化
+	public Game(List<User> users) {
+		for(int i=0; i<users.size(); i++) {
+			players.add( new Player(users.get(i))) ;
+		}
 		this.dealer = new Dealer() ;
 		this.deck = new Deck() ;
 		this.gamePhase = GamePhase.NOT_STARTED ;
 	}
 	
 	//getter,setter
-	public Player getPlayer() {
-		return player;
-	}
-	public void setPlayer(Player player) {
-		this.player = player;
-	}
 	public Dealer getDealer() {
 		return dealer;
 	}
@@ -57,13 +53,15 @@ public class Game {
 		this.gamePhase = gamePhase;
 	}
 
-	public Player getSplitPlayer() {
-		return splitPlayer;
+	public List<Player> getPlayers() {
+		return players;
 	}
 
-	public void setSplitPlayer(Player splitPlayer) {
-		this.splitPlayer = splitPlayer;
+	public void setPlayers(List<Player> players) {
+		this.players = players;
 	}
+
+	
 	
 	
 	

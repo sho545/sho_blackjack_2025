@@ -6,10 +6,12 @@ import java.util.List;
 import model.Game.GamePhase;
 import model.card.Card;
 import model.card.Deck;
+import model.card.Hand;
+import model.card.Hand.HandPhase;
+import model.card.Hand.HandResult;
 import model.player.BasePlayer;
 import model.player.Dealer;
 import model.player.Player;
-import model.player.Player.PlayerResult;
 
 //このクラスはディーラーの役割のメソッドを提供するクラスです
 public class GameMaster {
@@ -30,12 +32,14 @@ public class GameMaster {
 		game.setGamePhase(Game.GamePhase.INITIAL_DEAL) ;
 		
 		Deck deck = game.getDeck() ;
-		Player player = game.getPlayer() ;
+		List<Player> players = game.getPlayers() ;
 		Dealer dealer = game.getDealer() ;
 		
-		//カードを2枚ずつ配る		
-		for(int i=0; i<2; i++) {
-			player.getHand().add(deck.drawCard()) ;
+		//player/dealerの手札0にカードを2枚ずつ配る		
+		for(int i=0; i<players.size(); i++) {
+			for(int j=0; j<2; j++) {
+				players.get(i).getHands().get(0).getList().add(deck.drawCard()) ;
+			}
 		}
 //		Card sp1 = new Card(3,1) ;
 //		Card hart1 = new Card(1,1) ;
@@ -44,97 +48,96 @@ public class GameMaster {
 //		player.getHand().add(hart1) ;
 		
 		for(int i=0; i<2; i++) {
-			dealer.getHand().add(deck.drawCard()) ;
+			dealer.getHands().get(0).getList().add(deck.drawCard()) ;
 		}
-		player.setSumOfHand(player.calculateSumOfHand());
-		dealer.setSumOfHand(dealer.calculateSumOfHand());
+		//player毎に手札0の合計をセット
+		for(int i=0; i<players.size(); i++) {
+			Player player = players.get(i) ;
+			//i番目のplayerの手札0
+			Hand hand = player.getHands().get(0) ;
+			hand.setSumOfHand(hand.calculateSumOfHand()) ;
+		}
+		dealer.getHands().get(0).calculateSumOfHand() ;
 	}
 	
 	//バーストチェックを行って、バーストの結果をgameにセット
-	//playerがバースト発生していたときはplayer resultをloseにセット
+	//バースト発生していたplayeのhandにはhand result　loseをセット
 	public  void checkAndSetBust(Game game) {
-		Player player = game.getPlayer() ;
+		List<Player> players = game.getPlayers() ;
 		BasePlayer dealer = game.getDealer() ;
 		
-		int playersSumOfHand = player.calculateSumOfHand() ;
-		int dealersSumOfHand = dealer.calculateSumOfHand() ;
-		
-		player.setSumOfHand(playersSumOfHand);
-		dealer.setSumOfHand(dealersSumOfHand);
-		
-		if(playersSumOfHand > 21) {
-			player.setBust(true) ;
-			player.setPlayerResult(Player.PlayerResult.LOSE);
-		}
-		if(dealersSumOfHand > 21) {
-			dealer.setBust(true); 
-		}
-		//splitPlayerがいればsplitPlayerのバーストも判定
-		if(game.getSplitPlayer() != null) {
-			int splitPlayersSumOfHand = game.getSplitPlayer().calculateSumOfHand() ;
-			game.getSplitPlayer().setSumOfHand(splitPlayersSumOfHand) ;
-			if(splitPlayersSumOfHand > 21) {
-				game.getSplitPlayer().setBust(true);
-				game.getSplitPlayer().setPlayerResult(Player.PlayerResult.LOSE);
+		//playerのhand毎にbustチェック
+		for(int i=0; i<players.size(); i++) {
+			//i番目のplayerについての操作
+			Player player = players.get(i) ;	
+			for(int j=0; j<player.getHands().size(); j++) {
+				//i番目のplayerのj番目の手札のバストチェックの結果とバストならoverフェーズをセット
+				Hand hand = player.getHands().get(j);
+				hand.setBust(hand.checkBust());
+				if(hand.checkBust()) {
+					hand.setHandResult(HandResult.LOSE);
+					hand.setHandPhase(HandPhase.OVER);
+				}
 			}
 		}
+		if(dealer.getHands().get(0).calculateSumOfHand() > 21) {
+			dealer.getHands().get(0).setBust(true); 
+		}	
 	}
 	
 	//splitチェックを行ってsplitならplayerにisSplit=trueをセット
-	public void setIsSplit(Game game) {
-		List<Card> playersHand = game.getPlayer().getHand() ;
-		if(playersHand.size() == 2 && playersHand.get(0).getNumber() == playersHand.get(1).getNumber()) {
-			//プレイヤーの手札が二枚でかつ同じ数字のとき
-			game.getPlayer().setSplit(true) ;			
-		} else {
-			game.getPlayer().setSplit(false);
+	public void checkAndSetSplit(Game game) {
+		List<Player> players = game.getPlayers() ;
+		for(int i=0; i<players.size(); i++) {
+			Player player = players.get(i) ;
+			player.setSplit(player.checkSplit());
 		}
 	}
 	
-	//split用のプレイヤーを準備して手札をスプリット、カードを一枚ずつ配ってGameのsplitPlayerに格納
-	//ゲームフェーズをsplitPlayerターンへ
+	//isSplit=trueのplayerにsplitの操作(hand0とhand1にsplit用の手札をそれぞれ用意)
+	//ゲームフェーズをplayer turnに
 	public void split(Game game) {
-		//playerの情報をコピーしてnew。フィールドとして同じアドレスを参照するのはuserとhandとplayerResult
-		//enumクラスはimmutableなので注意
-		Player player = game.getPlayer() ;
-		Player splitPlayer = new Player(player) ;
-		//splitPlayerのカードをセット
-		splitPlayer.getHand().remove(1) ;
-		splitPlayer.drawCards(game.getDeck());
-		//playerのカードをセット
-		player.getHand().remove(0) ;
-		player.drawCards(game.getDeck());
-		//playerとsplitPlayerのカードの合計をセット
-		splitPlayer.setSumOfHand(splitPlayer.calculateSumOfHand());
-		player.setSumOfHand(player.calculateSumOfHand());
-		//gameに新しいplayerとsplitPlayerをセット
-		game.setSplitPlayer(splitPlayer);
-		game.setPlayer(player);
-		//ゲームフェーズをsplitPlayerのターンにセット
-		game.setGamePhase(Game.GamePhase.SPLIT_PLAYER_TURN);
+		List<Player> players = game.getPlayers() ;
+		Deck deck = game.getDeck() ;
+		for(int i=0; i<players.size(); i++) {
+			Player player = players.get(i) ;
+			if(player.isSplit()) {
+				//isSplit=trueのプレイヤーに対してsplitの操作
+				List<Hand> hands = player.getHands() ;
+				//split用の手札1に手札0をディープコピー
+				hands.add(new Hand(hands.get(0))) ;
+				//hand0の2枚目のカードを消去してデッキから一枚ドロー
+				hands.get(0).getList().remove(1) ;
+				hands.get(0).getList().add(deck.drawCard()) ;
+				//hand1の1枚目のカードを消去してデッキから一枚ドロー
+				hands.get(1).getList().remove(0) ;
+				hands.get(1).getList().add(deck.drawCard()) ;
+				//手札0と1の手札合計をそれぞれセット
+				hands.get(0).setSumOfHand(hands.get(0).calculateSumOfHand()) ;
+				hands.get(1).setSumOfHand(hands.get(1).calculateSumOfHand()) ;
+			}
+		}
+		game.setGamePhase(GamePhase.PLAYER_TURN) ;
 	}
-	
-	//playerにhitさせる
-	public void playerHits(Game game) {
-		BasePlayer player = game.getPlayer() ;
-		player.drawCards(game.getDeck());
-	}
-	//splitPlayerにhitさせる
-	public void splitPlayerHits(Game game) {
-		BasePlayer splitPlayer = game.getSplitPlayer() ;
-		splitPlayer.drawCards(game.getDeck());
-	}
-	
 	
 	//dealerにカードを引かせる
 	//プレイヤーのバストを確認して全てのプレイヤーがバストしていればなにもしない
 	public void makeDealerDrawCards(Game game) {
 		game.setGamePhase(Game.GamePhase.DEALER_TURN);
-		BasePlayer dealer = game.getDealer() ;
-		int dealersSumOfHand = dealer.calculateSumOfHand() ;
-		dealer.setSumOfHand(dealersSumOfHand);
-		if((game.getSplitPlayer() != null && game.getSplitPlayer().isBust()==false)||game.getPlayer().isBust()==false) {
-			dealer.drawCards(game.getDeck());
+		//プレイヤーの手札がすべてバストしているかをチェックするboolean bustを用意する
+		//全てバストの時はbust=true
+		boolean bust = true ;
+		List<Player> players = game.getPlayers() ;
+		for(int i=0; i<players.size(); i++) {
+			Player player = players.get(i);
+			for(int j=0; j<player.getHands().size(); j++) {
+				bust &= player.getHands().get(j).checkBust() ;
+			}		
+		}
+		Hand dealersHand = game.getDealer().getHands().get(0) ;
+		dealersHand.setSumOfHand(dealersHand.calculateSumOfHand()) ;
+		if(!bust) {
+			game.getDealer().drawCards(dealersHand, game.getDeck());
 		}
 	}
 	
@@ -142,95 +145,59 @@ public class GameMaster {
 	//bustチェック後呼び出します
 	public void checkGameOver(Game game) {
 		
-		Player player = game.getPlayer() ;
-		Dealer dealer = game.getDealer() ;
+		List<Player> players = game.getPlayers() ;
+		boolean dealerIsBust = game.getDealer().getHands().get(0).checkBust() ;
+		int dealerSumOfHand = game.getDealer().getHands().get(0).calculateSumOfHand() ;
 		
-		//splitPlayerがいるときといないときで条件分岐
-		if(game.getSplitPlayer() != null) {
-			//splitPlayerがいるとき
-			Player splitPlayer = game.getSplitPlayer() ;
-			if(dealer.isBust() == true) {
-				//dealerがバストしたとき
-				if(! splitPlayer.isBust()) {
-					splitPlayer.setPlayerResult(PlayerResult.WIN);
-				}
-				if(! player.isBust()) {
-					player.setPlayerResult(PlayerResult.WIN);
-				}
-			}else if(!(splitPlayer.isBust() && player.isBust())){
-				//splitPlayerとplayerのいずれかがバストしていないとき、
-				//バストしていないplayerとdealerの手札を比較して勝敗決定
-				//バストしているプレイヤーはバストチェックですでにloseをセットしているからそのまま
-				splitPlayer.setSumOfHand(splitPlayer.calculateSumOfHand());
-				player.setSumOfHand(player.calculateSumOfHand());
-				dealer.setSumOfHand(dealer.calculateSumOfHand());
-				int playersSumOfHand = player.getSumOfHand() ;
-				int dealersSumOfHand = dealer.getSumOfHand() ;
-				int splitPlayersSumOfHand = splitPlayer.getSumOfHand() ;
-				if(! splitPlayer.isBust()) {
-					if(splitPlayersSumOfHand > dealersSumOfHand) {
-						splitPlayer.setPlayerResult(PlayerResult.WIN);
-					} else if(splitPlayersSumOfHand < dealersSumOfHand) {
-						splitPlayer.setPlayerResult(PlayerResult.LOSE);
-					} else {
-						splitPlayer.setPlayerResult(PlayerResult.DRAW);
-					}
-				}
-				if(! player.isBust()) {
-					if(playersSumOfHand > dealersSumOfHand) {
-						player.setPlayerResult(PlayerResult.WIN) ;
-					}else if (playersSumOfHand < dealersSumOfHand) {
-						player.setPlayerResult(PlayerResult.LOSE) ;
-					}else {
-						player.setPlayerResult(PlayerResult.DRAW) ;
-					}
-				}
-			}
-			//プレイヤーの結果がすべてセットされていることを確認してゲーム終了フェーズをセット
-			if(splitPlayer.getPlayerResult() != PlayerResult.UNDEFINED && player.getPlayerResult() != PlayerResult.UNDEFINED) {
-				game.setGamePhase(GamePhase.GAME_OVER);
-			}else {
-				System.err.println("勝敗チェックが正しくなされていません");
-			}
-		}else {
-			//splitPlayerがいないとき上と同じ処理を行う
-			if(dealer.isBust() == true) {
-				//dealerがバストしたとき
-				if(! player.isBust()) {
-					System.out.println("dealerがバストの時の処理が行われました");
-					player.setPlayerResult(PlayerResult.WIN);
-				}
-			}else if(! player.isBust()){
-				//playerがバストしていないとき、
-				//playerとdealerの手札を比較して勝敗決定
-				//バストしているときはバストチェックですでにloseをセットしているからそのまま
-				player.setSumOfHand(player.calculateSumOfHand());
-				dealer.setSumOfHand(dealer.calculateSumOfHand());
-				int playersSumOfHand = player.getSumOfHand() ;
-				int dealersSumOfHand = dealer.getSumOfHand() ;
-				
-				if(playersSumOfHand > dealersSumOfHand) {
-					player.setPlayerResult(PlayerResult.WIN) ;
-				}else if (playersSumOfHand < dealersSumOfHand) {
-					player.setPlayerResult(PlayerResult.LOSE) ;
+		//各playerの手札ごとに勝敗決定
+		for(Player player: players) {
+			List<Hand> playerHands = player.getHands() ;
+			for(Hand hand: playerHands) {
+				//i番目のplayerの手札jの勝敗セット
+				if(hand.checkBust()) {
+					hand.setHandResult(HandResult.LOSE) ;
+					hand.setHandPhase(HandPhase.OVER);
+				}else if(dealerIsBust) {
+					hand.setHandResult(HandResult.WIN);
+					hand.setHandPhase(HandPhase.OVER);
 				}else {
-					player.setPlayerResult(PlayerResult.DRAW) ;
-				}				
-			}
-			//プレイヤーの結果がすべてセットされていることを確認してゲーム終了フェーズをセット
-			if(player.getPlayerResult() != PlayerResult.UNDEFINED) {
-				game.setGamePhase(GamePhase.GAME_OVER);
-			}else {
-				System.err.println("勝敗チェックが正しくなされていません");
+					if(hand.calculateSumOfHand() > dealerSumOfHand) {
+						hand.setHandResult(HandResult.WIN) ;
+					}else if (hand.calculateSumOfHand() < dealerSumOfHand) {
+						hand.setHandResult(HandResult.LOSE) ;
+					}else {
+						hand.setHandResult(HandResult.DRAW) ;
+					}
+					hand.setHandPhase(HandPhase.OVER);
+				}
 			}
 		}
-		
+		//全ての手札で勝敗がセットされたかを確認するためのboolean result(=trueなら全てセット済み)を用意
+		boolean result = true ;
+		for(Player player: players) {
+			List<Hand> playerHands = player.getHands() ;
+			for(Hand hand: playerHands) {
+				result &= (hand.getHandResult() != HandResult.UNDEFINED) ;
+			}
+		}
+		//全ての手札で勝敗がセットされたらゲームフェーズをoverに
+		if(result) {
+			game.setGamePhase(GamePhase.GAME_OVER);
+		}else {
+			System.err.println("全ての手札に結果がセットされていません");
+		}
 	}
 	
-	
-	//もらったgameのチップの増減を計算してユーザー情報のchipを書き換えして獲得したチップを返す
+	//ここから
+	//plyer毎にgettingChipsを計算してセット
 	//checkGameOverの後に呼び出す
-	public int calculateChips(Game game) {
+	public void calculateChips(Game game) {
+		List<Player> players = game.getPlayers() ;
+		for(Player player : players) {
+			int gettingChips = 0 ;
+			List<Hand> playerHands = player.getHands() ;
+			//ここから
+		}
 		//残りのチップを計算
 		int chipsForGame = game.getPlayer().getChipsForGame() ;
 		int remainChips = game.getPlayer().getUser().getChips() - chipsForGame ;

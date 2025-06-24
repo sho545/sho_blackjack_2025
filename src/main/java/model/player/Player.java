@@ -1,46 +1,49 @@
 package model.player;
 
+import java.util.List;
+
 import model.card.Card;
 import model.card.Deck;
+import model.card.Hand;
 import user.User;
 
 public class Player extends BasePlayer {
 	
-	public enum PlayerResult{
-		WIN,
-		DRAW,
-		LOSE,
-		UNDEFINED 
-	}
-	
 	private User user ;
-	private PlayerResult playerResult ;
-	private int chipsForGame ;
 	private boolean isSplit ;
+	private int gettingChips ;
 
 	//コンストラクタでloginUserを受け取って初期化
 	public Player(User loginUser) {
-		this.user = loginUser ;
-		this.playerResult = PlayerResult.UNDEFINED;
+		user = loginUser ;
 	}
 	
-	//コピーコンストラクタ
-	//浅いコピー(newされたPlayerオブジェクトはplayerのuserとplayResultと同じ参照先を参照)
-	public Player(Player player) {
-		super(player) ;
-		this.user = player.user ;
-		this.playerResult = player.playerResult ;
-		this.chipsForGame = player.chipsForGame ;
-		this.isSplit = player.isSplit ;
-	}
+//	//コピーコンストラクタ
+//	//浅いコピー(newされたPlayerオブジェクトはplayerのuserとplayResultと同じ参照先を参照)
+//	public Player(Player player) {
+//		super(player) ;
+//		this.user = player.user ;
+//		this.playerResult = player.playerResult ;
+//		this.chipsForGame = player.chipsForGame ;
+//		this.isSplit = player.isSplit ;
+//	}
 	
-	//カードを一枚引く
+	//山札の上からカードを一枚引く
 	@Override
-	public void drawCards(Deck deck){
+	public void drawCards(Hand hand, Deck deck){
 		
 		Card drawnCard = deck.drawCard() ;
-		this.getHand().add(drawnCard) ;
+		hand.getList().add(drawnCard) ;
 		
+	}
+	
+	public boolean checkSplit() {
+		List<Card> hand0 = this.getHands().get(0).getList() ;
+		boolean split = false ;
+		if(hand0.size()==2 && hand0.get(0)==hand0.get(1)) {
+			split = true ;
+		}
+		return split ;
 	}
 	
 	//getter,setter
@@ -52,33 +55,21 @@ public class Player extends BasePlayer {
 		this.user = user;
 	}
 
-	public PlayerResult getPlayerResult() {
-		return playerResult;
-	}
-
-	public void setPlayerResult(PlayerResult playerResult) {
-		this.playerResult = playerResult;
-	}
-	
-	public int getChipsForGame() {
-		return chipsForGame;
-	}
-
-	public void setChipsForGame(int chipsForGame) {
-		this.chipsForGame = chipsForGame;
-	}
-
 	public boolean isSplit() {
 		return isSplit;
 	}
-	
-	public boolean getIsSplit() {
-		return isSplit;
-	}
-
 
 	public void setSplit(boolean isSplit) {
 		this.isSplit = isSplit;
 	}
+
+	public int getGettingChips() {
+		return gettingChips;
+	}
+
+	public void setGettingChips(int gettingChips) {
+		this.gettingChips = gettingChips;
+	}
+	
 		
 }
