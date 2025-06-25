@@ -2,6 +2,8 @@ package servlet;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
 
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
@@ -14,14 +16,15 @@ import jakarta.servlet.http.HttpSession;
 import dao.UserDao;
 import model.Game;
 import model.GameMaster;
-import model.player.Player;
-import model.player.Player.PlayerResult;
+import model.card.Hand;
 import user.User;
 
 /**
  * Servlet implementation class GameSetup
  */
 @WebServlet("/gameSetup/*")
+
+//user,playerが一人のときを想定する
 public class GameSetupServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
@@ -72,7 +75,10 @@ public class GameSetupServlet extends HttpServlet {
 		String nextPage = "/blackjack.jsp" ;
 		
 		if(loginUser != null) {
-			Game game = new Game(loginUser) ;
+			//取得するユーザーは一人と想定
+			List<User> users = new ArrayList<>() ;
+			users.add(loginUser) ;
+			Game game = new Game(users) ;
 			GameMaster gameMaster = new GameMaster(game) ;
 			gameMaster.setGame(game);
 			
@@ -99,11 +105,13 @@ public class GameSetupServlet extends HttpServlet {
 		if(gameMaster != null) {
 			Game game = gameMaster.getGame() ;
 			//今回はプレイヤーが一人として処理を行う
+			//ユーザーの所持チップを取得
 			int chips = game.getPlayers().get(0).getUser().getChips();
 			
 			if(chipsForGame <= chips && chipsForGame >= 0) {
+				//playerのhand0に賭けチップをセット
 				game.getPlayers().get(0).getHands().get(0).setChipsForGame(chipsForGame);
-				
+				//初期ディールを行ってスプリットチェック
 				gameMaster.initialDeal(game) ;
 				gameMaster.checkAndSetSplit(game) ;
 				
@@ -139,26 +147,23 @@ public class GameSetupServlet extends HttpServlet {
 		if(gameMaster != null) {
 			if(loginUser != null) {
 				Game game = gameMaster.getGame() ;
-				PlayerResult playerResult = game.getPlayer().getPlayerResult() ;
+				//プレイヤーが一人の時の処理
+				//プレイヤーがbetしたチップと獲得したチップを取得
+				int bettingChips = 0 ;
+				List<Hand> hands = game.getPlayers().get(0).getHands() ;
+				for(Hand hand : hands) {
+					bettingChips += hand.getChipsForGame() ;
+				}
+				int gettingChips = game.getPlayers().get(0).getGettingChips() ;
+				//チップの+-をloginUserに反映
+				int remainChips = loginUser.getChips() - bettingChips + gettingChips ;
+				loginUser.setChips(remainChips);
 				UserDao userDao = new UserDao() ;
-				
-				if(playerResult == Player.PlayerResult.WIN) {
-					try {
-						userDao.victoriesPlus1(loginUser.getUserId()) ;
-						userDao.updateChips(loginUser) ;
-					}catch(SQLException e) {
-						System.err.println("データベースアクセス中にエラーが発生しました: " + e.getMessage());
-				        e.printStackTrace();
-
-					}
-				}else {
-					try {
-						userDao.numberOfGamesPlus1(loginUser.getUserId()) ;
-						userDao.updateChips(loginUser) ;
-					}catch(SQLException e) {
-						System.err.println("データベースアクセス中にエラーが発生しました: " + e.getMessage());
-				        e.printStackTrace();
-					}
+				try {
+					userDao.updateChips(loginUser) ;
+				}catch(SQLException e) {
+					System.err.println("データベースアクセス中にエラーが発生しました: " + e.getMessage());
+			        e.printStackTrace();
 				}
 				session.removeAttribute("gameMaster");
 				response.sendRedirect(request.getContextPath() + "/user.jsp");

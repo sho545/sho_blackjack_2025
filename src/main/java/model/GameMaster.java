@@ -94,7 +94,7 @@ public class GameMaster {
 		}
 	}
 	
-	//isSplit=trueのplayerにsplitの操作(hand0とhand1にsplit用の手札をそれぞれ用意)
+	//isSplit=trueのplayerにsplitの操作(hand0とhand1(split用手札)にsplitした手札をそれぞれ用意)
 	//ゲームフェーズをplayer turnに
 	public void split(Game game) {
 		List<Player> players = game.getPlayers() ;
