@@ -196,65 +196,91 @@ public class GameMaster {
 		for(Player player : players) {
 			int gettingChips = 0 ;
 			List<Hand> playerHands = player.getHands() ;
-			//ここから
-		}
-		//残りのチップを計算
-		int chipsForGame = game.getPlayer().getChipsForGame() ;
-		int remainChips = game.getPlayer().getUser().getChips() - chipsForGame ;
-		if(game.getSplitPlayer() != null) {
-			remainChips -= chipsForGame ;
-		}
-		//プラスされるチップ用の変数を用意
-		int gettingChips = 0 ;
-		//倍率決定のためにplayerの手札の合計と手札の枚数,勝敗を準備しておく
-		int playersPoint = game.getPlayer().calculateSumOfHand() ;
-		int numberOfPlayersCards = game.getPlayer().getHand().size() ;
-		Player.PlayerResult playersResult = game.getPlayer().getPlayerResult() ;
-
-		if(playersPoint == 21 && numberOfPlayersCards == 2 && playersResult == Player.PlayerResult.WIN) {
-			//最初の段階でブラックジャックで勝ったとき
-			gettingChips = (int) (chipsForGame * 1.5) ;
-		} else if (playersPoint == 21 && playersResult == Player.PlayerResult.WIN) {
-			//ブラックジャックになって勝ったとき
-			gettingChips = (int) (chipsForGame * 2.5) ;
-		} else if(playersResult == Player.PlayerResult.WIN) {
-			//ブラックジャック以外で勝ったとき
-			gettingChips = chipsForGame * 2 ;
-		}else if (playersResult == Player.PlayerResult.DRAW) {
-			//引き分けのとき
-			gettingChips = chipsForGame ;
-		} else if (playersResult == Player.PlayerResult.LOSE) {
-			//負けのとき
-			gettingChips = 0 ;
-		}
-		//splitPlayerがいるときはsplitPlayerの分のチップの増減も追加
-		if(game.getSplitPlayer() != null) {
-			int splitPlayersPoint = game.getSplitPlayer().calculateSumOfHand() ;
-			int numberOfSplitPlayersCards = game.getSplitPlayer().getHand().size() ;
-			Player.PlayerResult splitPlayersResult = game.getSplitPlayer().getPlayerResult() ;
-
-			if(splitPlayersPoint == 21 && numberOfSplitPlayersCards == 2 && splitPlayersResult == Player.PlayerResult.WIN) {
-				//最初の段階でブラックジャックで勝ったとき
-				gettingChips += (int) (chipsForGame * 1.5) ;
-			} else if (splitPlayersPoint == 21 && splitPlayersResult == Player.PlayerResult.WIN) {
-				//ブラックジャックになって勝ったとき
-				gettingChips += (int) (chipsForGame * 2.5) ;
-			} else if(splitPlayersResult == Player.PlayerResult.WIN) {
-				//ブラックジャック以外で勝ったとき
-				gettingChips += chipsForGame * 2 ;
-			}else if (splitPlayersResult == Player.PlayerResult.DRAW) {
-				//引き分けのとき
-				gettingChips += chipsForGame ;
-			} else if (splitPlayersResult == Player.PlayerResult.LOSE) {
-				//負けのとき
-				gettingChips += 0 ;
+			for(Hand hand : playerHands) {
+				int handGettingChips = 0 ;
+				int bettingChips = hand.getChipsForGame() ;
+				int numberOfCards = hand.getList().size() ;
+				int sumOfHand = hand.calculateSumOfHand() ;
+				HandResult result = hand.getHandResult() ;
+				if(sumOfHand == 21 && numberOfCards == 2 && result == HandResult.WIN) {
+					//最初の段階でブラックジャックで勝ったとき
+					handGettingChips = (int) (bettingChips* 1.5) ;
+				} else if (sumOfHand == 21 && result == HandResult.WIN) {
+					//ブラックジャックになって勝ったとき
+					handGettingChips = (int) (bettingChips * 2.5) ;
+				} else if(result == HandResult.WIN) {
+					//ブラックジャック以外で勝ったとき
+					handGettingChips = bettingChips * 2 ;
+				}else if (result == HandResult.DRAW) {
+					//引き分けのとき
+					handGettingChips = bettingChips ;
+				} else if (result == HandResult.LOSE) {
+					//負けのとき
+					handGettingChips = 0 ;
+				}else {
+					System.err.println("勝敗がセットされていません");
+				}
+				gettingChips += handGettingChips ;
 			}
+			player.setGettingChips(gettingChips);			
 		}
-		remainChips += gettingChips ;
-		//残りチップをuserに再セット
-		game.getPlayer().getUser().setChips(remainChips);
-		
-		return gettingChips ;
+//		//残りのチップを計算
+//		int chipsForGame = game.getPlayer().getChipsForGame() ;
+//		int remainChips = game.getPlayer().getUser().getChips() - chipsForGame ;
+//		if(game.getSplitPlayer() != null) {
+//			remainChips -= chipsForGame ;
+//		}
+//		//プラスされるチップ用の変数を用意
+//		int gettingChips = 0 ;
+//		//倍率決定のためにplayerの手札の合計と手札の枚数,勝敗を準備しておく
+//		int playersPoint = game.getPlayer().calculateSumOfHand() ;
+//		int numberOfPlayersCards = game.getPlayer().getHand().size() ;
+//		Player.PlayerResult playersResult = game.getPlayer().getPlayerResult() ;
+//
+//		if(playersPoint == 21 && numberOfPlayersCards == 2 && playersResult == Player.PlayerResult.WIN) {
+//			//最初の段階でブラックジャックで勝ったとき
+//			gettingChips = (int) (chipsForGame * 1.5) ;
+//		} else if (playersPoint == 21 && playersResult == Player.PlayerResult.WIN) {
+//			//ブラックジャックになって勝ったとき
+//			gettingChips = (int) (chipsForGame * 2.5) ;
+//		} else if(playersResult == Player.PlayerResult.WIN) {
+//			//ブラックジャック以外で勝ったとき
+//			gettingChips = chipsForGame * 2 ;
+//		}else if (playersResult == Player.PlayerResult.DRAW) {
+//			//引き分けのとき
+//			gettingChips = chipsForGame ;
+//		} else if (playersResult == Player.PlayerResult.LOSE) {
+//			//負けのとき
+//			gettingChips = 0 ;
+//		}
+//		//splitPlayerがいるときはsplitPlayerの分のチップの増減も追加
+//		if(game.getSplitPlayer() != null) {
+//			int splitPlayersPoint = game.getSplitPlayer().calculateSumOfHand() ;
+//			int numberOfSplitPlayersCards = game.getSplitPlayer().getHand().size() ;
+//			Player.PlayerResult splitPlayersResult = game.getSplitPlayer().getPlayerResult() ;
+//
+//			if(splitPlayersPoint == 21 && numberOfSplitPlayersCards == 2 && splitPlayersResult == Player.PlayerResult.WIN) {
+//				//最初の段階でブラックジャックで勝ったとき
+//				gettingChips += (int) (chipsForGame * 1.5) ;
+//			} else if (splitPlayersPoint == 21 && splitPlayersResult == Player.PlayerResult.WIN) {
+//				//ブラックジャックになって勝ったとき
+//				gettingChips += (int) (chipsForGame * 2.5) ;
+//			} else if(splitPlayersResult == Player.PlayerResult.WIN) {
+//				//ブラックジャック以外で勝ったとき
+//				gettingChips += chipsForGame * 2 ;
+//			}else if (splitPlayersResult == Player.PlayerResult.DRAW) {
+//				//引き分けのとき
+//				gettingChips += chipsForGame ;
+//			} else if (splitPlayersResult == Player.PlayerResult.LOSE) {
+//				//負けのとき
+//				gettingChips += 0 ;
+//			}
+//		}
+//		remainChips += gettingChips ;
+//		//残りチップをuserに再セット
+//		game.getPlayer().getUser().setChips(remainChips);
+//		
+//		return gettingChips ;
 	}
 	
 	//setter,getter

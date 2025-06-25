@@ -98,15 +98,16 @@ public class GameSetupServlet extends HttpServlet {
 		
 		if(gameMaster != null) {
 			Game game = gameMaster.getGame() ;
-			int chips = game.getPlayer().getUser().getChips();
+			//今回はプレイヤーが一人として処理を行う
+			int chips = game.getPlayers().get(0).getUser().getChips();
 			
 			if(chipsForGame <= chips && chipsForGame >= 0) {
-				game.getPlayer().setChipsForGame(chipsForGame);
+				game.getPlayers().get(0).getHands().get(0).setChipsForGame(chipsForGame);
 				
 				gameMaster.initialDeal(game) ;
-				gameMaster.setIsSplit(game) ;
+				gameMaster.checkAndSetSplit(game) ;
 				
-				if(!game.getPlayer().isSplit()) {
+				if(!game.getPlayers().get(0).isSplit()) {
 					//splitでなかったとき
 					message = "hitしますか?standしますか?" ;
 					game.setGamePhase(Game.GamePhase.PLAYER_TURN);
