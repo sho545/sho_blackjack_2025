@@ -1,5 +1,6 @@
 package model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import model.card.Deck;
@@ -25,6 +26,7 @@ public class Game {
 
 	//コンストラクタでusersを受け取って初期化
 	public Game(List<User> users) {
+		players = new ArrayList<>() ;
 		for(int i=0; i<users.size(); i++) {
 			players.add( new Player(users.get(i))) ;
 		}

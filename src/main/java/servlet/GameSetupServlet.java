@@ -109,11 +109,11 @@ public class GameSetupServlet extends HttpServlet {
 			int chips = game.getPlayers().get(0).getUser().getChips();
 			
 			if(chipsForGame <= chips && chipsForGame >= 0) {
-				//playerのhand0に賭けチップをセット
-				game.getPlayers().get(0).getHands().get(0).setChipsForGame(chipsForGame);
 				//初期ディールを行ってスプリットチェック
 				gameMaster.initialDeal(game) ;
 				gameMaster.checkAndSetSplit(game) ;
+				//playerのhand0に賭けチップをセット
+				game.getPlayers().get(0).getHands().get(0).setChipsForGame(chipsForGame);
 				
 				if(!game.getPlayers().get(0).isSplit()) {
 					//splitでなかったとき

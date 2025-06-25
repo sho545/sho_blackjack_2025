@@ -118,9 +118,16 @@ public class Hand {
 	public void setBust(boolean isBust) {
 		this.isBust = isBust;
 	}
+	public boolean isBust() {
+		return isBust ;
+	}
 
 	public void setSumOfHand(int sumOfHand) {
 		this.sumOfHand = sumOfHand;
+	}
+	
+	public int getSumOfHand() {
+		return sumOfHand ;
 	}
 
 	public HandResult getHandResult() {

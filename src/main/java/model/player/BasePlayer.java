@@ -13,12 +13,14 @@ public abstract class BasePlayer {
 //	private List<Boolean> Busts ;
 //	private List<Integer> sumsOfHands ;
 	
-//	//コンストラクタ
-//	public BasePlayer() {
-//        this.hand = new ArrayList<>();
-//        this.isBust = false;
-//        this.sumOfHand = 0;
-//    }
+	//コンストラクタ
+	public BasePlayer() {
+        hands = new ArrayList<>();
+        //手札0と手札1をあらかじめセット
+        for(int i=0; i<2; i++) {
+        		hands.add(new Hand()) ;
+        }
+    }
 //	
 //	// コピー用のコンストラクタ
 //    public BasePlayer(BasePlayer other) {

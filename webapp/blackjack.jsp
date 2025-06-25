@@ -28,7 +28,7 @@
 		    <c:set var="gameMaster" value="${sessionScope.gameMaster}" />
 		    <c:set var="game" value="${gameMaster.game}" />
 		    <c:set var="dealer" value="${game.dealer}" />
-		    <c:set var="player" value="${game.player}" />
+		    <c:set var="player" value="${game.players[0]}" />
 		    <c:set var="gamePhase" value="${game.gamePhase}" />
 		    
             <div class="game-table">
@@ -40,12 +40,12 @@
                         <span class="score">
                             <%-- ゲーム終了時のみ合計点を表示 --%>
                             <c:if test="${gamePhase == 'GAME_OVER'}">
-                                ${dealer.sumOfHand}
+                                ${dealer.hands[0].sumOfHand}
                             </c:if>
                         </span>
                     </h2>
                     <div class="hand">
-                        <c:forEach var="card" items="${dealer.hand}" varStatus="status">
+                        <c:forEach var="card" items="${dealer.hands[0].list}" varStatus="status">
                             <%-- ゲーム中で、かつ2枚目のカードの場合だけ裏返す --%>
                             <c:choose>
                                 <c:when test="${gamePhase != 'GAME_OVER' and status.count == 2}">
@@ -80,16 +80,7 @@
 	                    <c:choose>
 	                        <%-- 1. ゲーム終了時の表示 --%>
 	                        <c:when test="${gamePhase == 'GAME_OVER'}">
-	                            <c:choose>
-	                            	<c:when test="${not empty game.splitPlayer}"><p class="game-result result-win">ゲーム終了！ チップ<fmt:formatNumber value="${gettingChips}" />枚獲得です。</p></c:when>
-	                            	<c:otherwise>
-		                                <c:choose>
-		                                    <c:when test="${player.playerResult == 'WIN'}"><p class="game-result result-win">あなたの勝ちです！チップ<fmt:formatNumber value="${gettingChips}" />枚獲得です!!</p></c:when>
-		                                    <c:when test="${player.playerResult == 'LOSE'}"><p class="game-result result-lose">あなたの負けです...</p></c:when>
-		                                    <c:when test="${player.playerResult == 'DRAW'}"><p class="game-result result-draw">引き分けです</p></c:when>
-		                                </c:choose>
-	                            	</c:otherwise>
-	                            </c:choose>
+	                            <p class="game-result result-win">ゲーム終了！ チップ<fmt:formatNumber value="${gettingChips}" />枚獲得です。</p>
 	                            <form action="${pageContext.request.contextPath}/gameSetup/over" method="post" style="margin-top: 20px;"><button class="btn btn-gameover">ユーザー画面へ</button></form>
 	                        </c:when>
 	
@@ -105,7 +96,7 @@
 	                        </c:when>
 	                        
 	                        <%-- 3. スプリット選択画面 --%>
-	                        <c:when test="${player.isSplit && gamePhase == 'INITIAL_DEAL'}">
+	                        <c:when test="${not empty player.split && gamePhase == 'INITIAL_DEAL'}">
 	                       		<div class="split-choices">
 					                <form action="${pageContext.request.contextPath}/game/split" method="post"><button class="btn btn-split">はい (Split)</button></form>
 					                <form action="${pageContext.request.contextPath}/game/notSplit" method="post"><button class="btn btn-not-split">いいえ (続行)</button></form>
@@ -113,133 +104,37 @@
 	                        </c:when>
 	                        
 	                        <%-- 4. それ以外のゲーム中のアクションボタン (Hit/Stand) --%>
-	                        <c:when test="${not empty game.splitPlayer && gamePhase == 'SPLIT_PLAYER_TURN' }">
-	                        	<form action="${pageContext.request.contextPath}/game/splitHit" method="post"><button class="btn btn-hit">Hit</button></form>
-                                <form action="${pageContext.request.contextPath}/game/splitStand" method="post"><button class="btn btn-stand">Stand</button></form>
+	                        <c:when test="${gamePhase == 'PLAYER_TURN' }">
+	                        		<form action="${pageContext.request.contextPath}/game/hit" method="post"><button class="btn btn-hit">Hit</button></form>
+                            		<form action="${pageContext.request.contextPath}/game/stand" method="post"><button class="btn btn-stand">Stand</button></form>
 	                        </c:when>
-	                        <c:otherwise>
-                                <form action="${pageContext.request.contextPath}/game/hit" method="post"><button class="btn btn-hit">Hit</button></form>
-                                <form action="${pageContext.request.contextPath}/game/stand" method="post"><button class="btn btn-stand">Stand</button></form>
-	                        </c:otherwise>
+	
 	                    </c:choose>
                     </div>
                 </div>
                 
 
                 <%-- =========== プレイヤーのエリア =========== --%>
-               	<c:choose>
+               	<div class="player-hands-container">
+	             	<c:forEach var="hand" items="${player.hands}" varStatus="handStatus">
+                        <div class="hand-area player-area">
+                            <h2>
+                            		//ここから
+                                <span><c:if test="${}">ハンド ${handStatus.count}</c:if><c:if test="${empty game.splitPlayer}">${loginUser.userName}さんの手札</c:if></span>
+                                <span class="score">${hand.sumOfHand}</span>
+                            </h2>
+                            <div class="hand">
+                                <c:forEach var="card" items="${hand.list}">
+                                    <c:set var="rankName" value="${card.number}" /><c:if test="${card.number == 1}"><c:set var="rankName" value="A" /></c:if><c:if test="${card.number == 11}"><c:set var="rankName" value="J" /></c:if><c:if test="${card.number == 12}"><c:set var="rankName" value="Q" /></c:if><c:if test="${card.number == 13}"><c:set var="rankName" value="K" /></c:if>
+                                    <div class="card suit-${card.mark} rank-${rankName}"><div class="card-inner"><div class="card-topleft"><span class="rank"></span><span class="suit"></span></div><div class="card-center"><span class="suit-big"></span></div><div class="card-bottomright"><span class="rank"></span><span class="suit"></span></div></div></div>
+                                </c:forEach>
+                            </div>
+                        </div>
+                    </c:forEach>  
+               	</div>
                	
-               		<%-- splitの時の手札 --%>
-               		<c:when test="${not empty game.splitPlayer }">
-               			<c:set var="splitPlayer" value="${game.splitPlayer }"/>
-               			
-               			<div class="split-hands-container">
-               				<%-- 手札1(splitPlayer)の手札を表示する欄 --%>
-	                			<div class="hand-area splitPlayer-area">
-				                    <h2><span>手札1</span>
-				                    		<span class="score">${splitPlayer.sumOfHand }</span>
-				                    		<span class="bust">
-				                    			<c:if test="${splitPlayer.isBust == true }">
-				                    				bustです
-				                    			</c:if>
-			                    			</span>
-				                    </h2>
-				                    <div class="hand">
-				                        <c:forEach var="card" items="${splitPlayer.hand}">
-				                    
-			                               <div class="card suit-${card.mark} rank-${card.number}">
-			                                     <div class="card-inner">
-			                                       <div class="card-topleft">
-			                                         <span class="rank"></span>
-			                                         <span class="suit"></span>
-			                                       </div>
-			                                       <div class="card-center">
-			                                         <span class="suit-big"></span>
-			                                       </div>
-			                                       <div class="card-bottomright">
-			                                         <span class="rank"></span>
-			                                         <span class="suit"></span>
-			                                       </div>
-			                                     </div>
-			                               </div>
-			                               
-				                        </c:forEach>
-				                    </div>
-		               		</div>
-				                    
-		                    <%-- 手札2(player)を表示する欄 --%>
-               				<div class="hand-area player-area">
-			                    <h2>
-			                    		<span>手札2</span>
-			                    		<span class="score">${player.sumOfHand }</span>
-			                    		<span class="bust">
-			                    			<c:if test="${player.isBust == true }">
-			                    				bustです
-			                    			</c:if>
-			                    		</span>
-			                    </h2>
-			                    <div class="hand">
-			                        <c:forEach var="card" items="${player.hand}">
-			                    
-		                               <div class="card suit-${card.mark} rank-${card.number}">
-		                                     <div class="card-inner">
-		                                       <div class="card-topleft">
-		                                         <span class="rank"></span>
-		                                         <span class="suit"></span>
-		                                       </div>
-		                                       <div class="card-center">
-		                                         <span class="suit-big"></span>
-		                                       </div>
-		                                       <div class="card-bottomright">
-		                                         <span class="rank"></span>
-		                                         <span class="suit"></span>
-		                                       </div>
-		                                     </div>
-		                               </div>
-		                               
-			                        </c:forEach>
-			                    </div>
-			                 </div>
-			             </div>    
-               		</c:when>
-               		<%-- 通常の時の手札 --%>
-               		<c:otherwise>
-           				<div class="hand-area player-area">
-		                    <h2>
-		                        <span>${loginUser.userName }の手札</span>
-		                        <span class="score">${player.sumOfHand}</span>
-		                        <span class="bust">
-			                    			<c:if test="${player.isBust == true }">
-			                    				bustです
-			                    			</c:if>
-			                    	</span>
-		                    </h2>
-		                    <div class="hand">
-		                        <c:forEach var="card" items="${player.hand}">
-		                    
-			                               <div class="card suit-${card.mark} rank-${card.number}">
-		                                      <div class="card-inner">
-		                                        <div class="card-topleft">
-		                                          <span class="rank"></span>
-		                                          <span class="suit"></span>
-		                                        </div>
-		                                        <div class="card-center">
-		                                          <span class="suit-big"></span>
-		                                        </div>
-		                                        <div class="card-bottomright">
-		                                          <span class="rank"></span>
-		                                          <span class="suit"></span>
-		                                        </div>
-		                                      </div>
-		                                    </div>
-		                        </c:forEach>
-		                    </div>
-               			</div>
-               		</c:otherwise>
-               		
-               	</c:choose>
-
-        </c:when>
+             </div>
+          </c:when>
 
         <%-- ログインしていない、またはゲームが始まっていない場合 --%>
         <c:otherwise>
