@@ -84,7 +84,7 @@ public class GameManipulateServlet extends HttpServlet {
 		HttpSession session = request.getSession(false) ;
 		GameMaster gameMaster = (GameMaster) session.getAttribute("gameMaster") ;
 		String nextPage = "/blackjack.jsp" ;
-		String message = "手札1のターンです。hitしますか?standしますか?" ;
+		String message = "hitしますか?standしますか?" ;
 		
 		if(gameMaster != null) {
 			
@@ -93,6 +93,7 @@ public class GameManipulateServlet extends HttpServlet {
 			if(game.getPlayers().get(0).getHands().get(0).getChipsForGame() *2 <= game.getPlayers().get(0).getUser().getChips()) {
 				gameMaster.split(game);
 				game.setGamePhase(Game.GamePhase.PLAYER_TURN);
+				game.getPlayers().get(0).getHands().get(0).setHandPhase(HandPhase.PLAY);
 			} else {
 				message="チップが足りないためsplitできません" ;
 			}
@@ -119,6 +120,7 @@ public class GameManipulateServlet extends HttpServlet {
 			
 			Game game = gameMaster.getGame() ;
 			game.setGamePhase(Game.GamePhase.PLAYER_TURN);
+			game.getPlayers().get(0).getHands().get(0).setHandPhase(HandPhase.PLAY);
 			
 			request.setAttribute("gameMaster", gameMaster);
 			request.setAttribute("message", message);
@@ -199,10 +201,12 @@ public class GameManipulateServlet extends HttpServlet {
 			Player player = game.getPlayers().get(0) ;
 			List<Hand> hands = player.getHands() ;
 			Hand playHand = null ;
+			int playHandIndex = -1 ;
 			//playerのhandsを順に確認していってはじめてOVERでなかったhandを取り出す
-			for(Hand hand: hands) {
-				if(hand.getHandPhase() != HandPhase.OVER) {
-					playHand = hand ;
+			for(int i=0; i<hands.size(); i++) {
+				if(hands.get(i).getHandPhase() != HandPhase.OVER) {
+					playHand = hands.get(i) ;
+					playHandIndex = i ;
 					break;
 				}			
 			}
@@ -217,11 +221,32 @@ public class GameManipulateServlet extends HttpServlet {
 				for(Hand hand: hands) {
 					result &= hand.checkBust() ;
 				}
+				//全ての手札のhandphaseがoverならtrueを返すboolean handPhaseEndを用意
+				boolean handPhaseEnd = true ;
+				for(Hand hand: hands) {
+					handPhaseEnd &= (hand.getHandPhase() == HandPhase.OVER) ;
+				}
 				if(result == true) {
+					//手札が全てバストのときゲームチェック
+					gameMaster.checkAndSetBust(game);
 					gameMaster.checkGameOver(game);				
-				}else {
+				}else if(handPhaseEnd){
+					//バストしていない手札があって全てのhandPhhaseがoverのときディーラーのターンが発生してゲームチェック
 					gameMaster.makeDealerDrawCards(game) ;
+					gameMaster.checkAndSetBust(game);
 					gameMaster.checkGameOver(game);
+				}else {
+					//バストしていない手札があってhandPhase:overでない手札があるとき次の手札のフェーズをplayにして返す
+					System.out.println("次のプレイヤーの手札の番に移ります");
+					System.out.println("hand0のゲームフェーズ" + hands.get(0).getHandPhase());
+					System.out.println("hand1のゲームフェーズ" + hands.get(1).getHandPhase());
+					System.out.println("hand1のbust" + hands.get(1).isBust());
+					if(hands.get(playHandIndex+1) != null) {
+						hands.get(playHandIndex+1).setHandPhase(HandPhase.PLAY);
+						message = "hitしますか?standしますか?" ;
+					}else {
+						System.err.println("手札の数が適切でありません");
+					}
 				}
 				//ゲーム終了フェーズを確認して獲得チップ取得
 				if(game.getGamePhase() == Game.GamePhase.GAME_OVER) {
@@ -256,13 +281,15 @@ public class GameManipulateServlet extends HttpServlet {
 		if(gameMaster != null) {
 			Game game = gameMaster.getGame() ;
 			//playerは一人と想定
-			//play中のhandを見つけてhandPhaseをoverにする
-			List<Hand> playerHands = game.getPlayers().get(0).getHands() ;
-			for(Hand hand: playerHands) {
-				if(hand.getHandPhase() == HandPhase.PLAY) {
-					hand.setHandPhase(HandPhase.OVER);
-					break ;
-				}
+			//playerのhandsを順に確認していってはじめてOVERでなかったhandを取り出してoverにする
+			List<Hand> hands = game.getPlayers().get(0).getHands() ;
+			int playHandIndex = -1 ;
+			for(int i=0; i<hands.size(); i++) {
+				if(hands.get(i).getHandPhase() != HandPhase.OVER) {
+					hands.get(i).setHandPhase(HandPhase.OVER);
+					playHandIndex = i ;
+					break;
+				}			
 			}
 			//全ての手札がバストならtrueとなるboolean resultを用意
 			boolean result = true ;
@@ -288,6 +315,7 @@ public class GameManipulateServlet extends HttpServlet {
 				gettingChips = game.getPlayers().get(0).getGettingChips() ;
 			}else {
 				//それ以外の時は次のhandのターンに
+				hands.get(playHandIndex+1).setHandPhase(HandPhase.PLAY);
 				message = "hitしますか？standしますか？" ;
 				request.setAttribute("gameMaster", gameMaster);
 				request.setAttribute("message", message);

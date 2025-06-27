@@ -17,6 +17,7 @@ import dao.UserDao;
 import model.Game;
 import model.GameMaster;
 import model.card.Hand;
+import model.card.Hand.HandPhase;
 import user.User;
 
 /**
@@ -119,6 +120,7 @@ public class GameSetupServlet extends HttpServlet {
 					//splitでなかったとき
 					message = "hitしますか?standしますか?" ;
 					game.setGamePhase(Game.GamePhase.PLAYER_TURN);
+					game.getPlayers().get(0).getHands().get(0).setHandPhase(HandPhase.PLAY);
 				} else {
 					//splitだったとき
 					message = "splitしますか?" ;

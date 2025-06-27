@@ -17,9 +17,7 @@ public abstract class BasePlayer {
 	public BasePlayer() {
         hands = new ArrayList<>();
         //手札0と手札1をあらかじめセット
-        for(int i=0; i<2; i++) {
-        		hands.add(new Hand()) ;
-        }
+        	hands.add(new Hand()) ;
     }
 //	
 //	// コピー用のコンストラクタ

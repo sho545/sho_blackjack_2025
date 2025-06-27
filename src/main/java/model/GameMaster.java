@@ -37,15 +37,14 @@ public class GameMaster {
 		
 		//player/dealerの手札0にカードを2枚ずつ配る		
 		for(int i=0; i<players.size(); i++) {
-			for(int j=0; j<2; j++) {
-				players.get(i).getHands().get(0).getList().add(deck.drawCard()) ;
-			}
+//			for(int j=0; j<2; j++) {
+//				players.get(i).getHands().get(0).getList().add(deck.drawCard()) ;
+//			}
+			Card sp1 = new Card(3,1) ;
+			Card hart1 = new Card(1,1) ;
+			players.get(i).getHands().get(0).getList().add(sp1) ;
+			players.get(i).getHands().get(0).getList().add(hart1) ;
 		}
-//		Card sp1 = new Card(3,1) ;
-//		Card hart1 = new Card(1,1) ;
-//		
-//		player.getHand().add(sp1);
-//		player.getHand().add(hart1) ;
 		
 		for(int i=0; i<2; i++) {
 			dealer.getHands().get(0).getList().add(deck.drawCard()) ;
@@ -61,7 +60,7 @@ public class GameMaster {
 	}
 	
 	//バーストチェックを行って、バーストの結果をgameにセット
-	//バースト発生していたplayeのhandにはhand result　loseをセット
+	//バースト発生していたplayeのhandにはhand result:lose/hand phase:overをセット
 	public  void checkAndSetBust(Game game) {
 		List<Player> players = game.getPlayers() ;
 		BasePlayer dealer = game.getDealer() ;
@@ -73,6 +72,7 @@ public class GameMaster {
 			for(int j=0; j<player.getHands().size(); j++) {
 				//i番目のplayerのj番目の手札のバストチェックの結果とバストならoverフェーズをセット
 				Hand hand = player.getHands().get(j);
+				hand.setSumOfHand(hand.calculateSumOfHand());
 				hand.setBust(hand.checkBust());
 				if(hand.checkBust()) {
 					hand.setHandResult(HandResult.LOSE);
@@ -146,8 +146,9 @@ public class GameMaster {
 	public void checkGameOver(Game game) {
 		
 		List<Player> players = game.getPlayers() ;
-		boolean dealerIsBust = game.getDealer().getHands().get(0).checkBust() ;
 		int dealerSumOfHand = game.getDealer().getHands().get(0).calculateSumOfHand() ;
+		game.getDealer().getHands().get(0).setSumOfHand(dealerSumOfHand);
+		boolean dealerIsBust = game.getDealer().getHands().get(0).checkBust() ;
 		
 		//各playerの手札ごとに勝敗決定
 		for(Player player: players) {

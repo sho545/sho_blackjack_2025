@@ -117,19 +117,19 @@
                 <%-- =========== プレイヤーのエリア =========== --%>
                	<div class="player-hands-container">
 	             	<c:forEach var="hand" items="${player.hands}" varStatus="handStatus">
-                        <div class="hand-area player-area">
-                            <h2>
-                            		//ここから
-                                <span><c:if test="${}">ハンド ${handStatus.count}</c:if><c:if test="${empty game.splitPlayer}">${loginUser.userName}さんの手札</c:if></span>
-                                <span class="score">${hand.sumOfHand}</span>
-                            </h2>
-                            <div class="hand">
-                                <c:forEach var="card" items="${hand.list}">
-                                    <c:set var="rankName" value="${card.number}" /><c:if test="${card.number == 1}"><c:set var="rankName" value="A" /></c:if><c:if test="${card.number == 11}"><c:set var="rankName" value="J" /></c:if><c:if test="${card.number == 12}"><c:set var="rankName" value="Q" /></c:if><c:if test="${card.number == 13}"><c:set var="rankName" value="K" /></c:if>
-                                    <div class="card suit-${card.mark} rank-${rankName}"><div class="card-inner"><div class="card-topleft"><span class="rank"></span><span class="suit"></span></div><div class="card-center"><span class="suit-big"></span></div><div class="card-bottomright"><span class="rank"></span><span class="suit"></span></div></div></div>
-                                </c:forEach>
-                            </div>
-                        </div>
+                        <c:if test="${not empty hand.list }">
+                        		<div class="hand-area player-area ${hand.handPhase == 'PLAY' ? 'active-hand' : ''}">
+	                            <h2>
+	                                <span>${loginUser.userName}さんの手札</span>
+	                                <span class="score">${hand.sumOfHand}</span>
+	                            </h2>
+	                            <div class="hand">
+	                                <c:forEach var="card" items="${hand.list}">
+	                                    <div class="card suit-${card.mark} rank-${card.number}"><div class="card-inner"><div class="card-topleft"><span class="rank"></span><span class="suit"></span></div><div class="card-center"><span class="suit-big"></span></div><div class="card-bottomright"><span class="rank"></span><span class="suit"></span></div></div></div>
+	                                </c:forEach>
+	                            </div>
+                        		</div>
+                        	</c:if>
                     </c:forEach>  
                	</div>
                	

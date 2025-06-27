@@ -40,7 +40,7 @@ public class Player extends BasePlayer {
 	public boolean checkSplit() {
 		List<Card> hand0 = this.getHands().get(0).getList() ;
 		boolean split = false ;
-		if(hand0.size()==2 && hand0.get(0)==hand0.get(1)) {
+		if(hand0.size()==2 && hand0.get(0).getNumber()==hand0.get(1).getNumber()) {
 			split = true ;
 		}
 		return split ;
